@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from "react";
+import WorldCup from "./WorldCup.jsx";
 
 const NAV_LINKS = [
-  { label: "Početna", href: "#hero" },
+  { label: "Početna", href: "#/" },
   { label: "Proizvodi", href: "#products" },
+  { label: "SP 2026 🏆", href: "#/world-cup" },
   { label: "Kolekcija", href: "#gallery" },
   { label: "FAQ", href: "#faq" },
 ];
@@ -106,7 +108,7 @@ function Navbar({ cartCount, wishCount, onCart, onSearch }) {
     >
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1.5rem", display: "flex", alignItems: "center", height: 68 }}>
         {/* Logo */}
-        <a href="#hero" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}>
+        <a href="#/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{
             width: 36, height: 36, borderRadius: 8,
             background: "linear-gradient(135deg, #00dcff, #39ff14)",
@@ -281,7 +283,7 @@ function HeroSection() {
             onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 0 50px rgba(0,220,255,0.6)"; }}
             onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 0 30px rgba(0,220,255,0.4)"; }}
           >⚡ Kupi odmah</a>
-          <a href="#gallery" style={{
+          <a href="#/world-cup" style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             background: "rgba(255,255,255,0.05)",
             border: "1px solid rgba(255,255,255,0.15)",
@@ -289,9 +291,9 @@ function HeroSection() {
             padding: "14px 32px", borderRadius: 12, textDecoration: "none",
             transition: "all 0.3s", fontFamily: "'Bebas Neue', sans-serif", letterSpacing: 2
           }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(0,220,255,0.4)"; e.currentTarget.style.color = "#00dcff"; }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(57,255,20,0.4)"; e.currentTarget.style.color = "#39ff14"; }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = "#fff"; }}
-          >Pogledaj kolekciju →</a>
+          >🏆 SP 2026 Kolekcija →</a>
         </div>
 
         {/* Stats row */}
@@ -994,39 +996,49 @@ export default function DresZaKes() {
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [toast, setToast] = useState(null);
+  const [route, setRoute] = useState(
+    typeof window !== "undefined" && window.location.hash.includes("world-cup") ? "worldcup" : "home"
+  );
+
+  useEffect(() => {
+    const onHash = () => {
+      setRoute(window.location.hash.includes("world-cup") ? "worldcup" : "home");
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
 
   const addToCart = (product) => {
     setCartItems(prev => [...prev, product]);
-    setToast(`${product.name} dodat u korpu! 🛒`);
+    setToast(`${product.name || product.team} dodat u korpu! 🛒`);
     setTimeout(() => setToast(null), 2800);
   };
 
   return (
     <div style={{ background: "#05050e", minHeight: "100vh", fontFamily: "'Outfit', sans-serif", color: "#fff" }}>
-      <style>{`
-* { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #05050e; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #05050e; }
-        ::-webkit-scrollbar-thumb { background: #00dcff44; border-radius: 99px; }
-        html { scroll-behavior: smooth; }
-
-      `}</style>
-
       <Navbar cartCount={cartItems.length} wishCount={0} onCart={() => setCartOpen(true)} onSearch={() => setSearchOpen(true)} />
 
-      <HeroSection />
-      <WhyUsSection />
-      <ProductsSection onAddToCart={addToCart} />
-      <ComparisonSection />
-      <MysterySection onAddToCart={addToCart} />
-      <GallerySection />
-      <TestimonialsSection />
-      <FAQSection />
+      {route === "worldcup" ? (
+        <div style={{ paddingTop: 68 }}>
+          <WorldCup onAddToCart={addToCart} />
+        </div>
+      ) : (
+        <>
+          <HeroSection />
+          <WhyUsSection />
+          <ProductsSection onAddToCart={addToCart} />
+          <ComparisonSection />
+          <MysterySection onAddToCart={addToCart} />
+          <GallerySection />
+          <TestimonialsSection />
+          <FAQSection />
+        </>
+      )}
       <Footer />
 
       {/* Floating buy button */}
-      <a href="#products" style={{
+      <a href={route === "worldcup" ? "#/world-cup" : "#products"} style={{
         position: "fixed", bottom: 28, right: 28, zIndex: 90,
         background: "linear-gradient(135deg, #00dcff, #39ff14)",
         color: "#000", fontWeight: 900,
