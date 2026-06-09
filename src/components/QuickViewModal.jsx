@@ -63,7 +63,6 @@ export default function QuickViewModal({ team, onClose, onAddToCart, onWish, wis
           <ProductGallery product={product} height={380} />
 
           <div style={{ display: "flex", flexDirection: "column" }}>
-            {/* Team header */}
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
               <span style={{ fontSize: 26 }}>{team.flag}</span>
               <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 32, color: "#fff", letterSpacing: 0.5, lineHeight: 1 }}>
@@ -74,29 +73,26 @@ export default function QuickViewModal({ team, onClose, onAddToCart, onWish, wis
               Dres za Svetsko prvenstvo 2026
             </div>
 
-            {/* Kit type toggle */}
             <div style={{ marginBottom: 16 }}>
               <div style={selLabel}>Tip dresa</div>
               <div style={{ display: "flex", gap: 8 }}>
-                <Toggle active={type === "home"} onClick={() => setType("home")} accent={accent}>Domaci</Toggle>
-                <Toggle active={type === "away"} onClick={() => setType("away")} accent={accent}>Gostujuci</Toggle>
+                <Toggle active={type === "home"} onClick={() => setType("home")} accent={accent}>Domaći</Toggle>
+                <Toggle active={type === "away"} onClick={() => setType("away")} accent={accent}>Gostujući</Toggle>
               </div>
             </div>
 
-            {/* Version toggle */}
             <div style={{ marginBottom: 16 }}>
               <div style={selLabel}>Verzija</div>
               <div style={{ display: "flex", gap: 8 }}>
                 <Toggle active={version === "fan"} onClick={() => setVersion("fan")} accent="#22d3ee">
-                  Fan \u00b7 4.200
+                  Fan · 4.200
                 </Toggle>
                 <Toggle active={version === "player"} onClick={() => setVersion("player")} accent="#4ade80">
-                  Player \u00b7 4.500
+                  Player · 4.500
                 </Toggle>
               </div>
             </div>
 
-            {/* Price */}
             <div style={{ marginBottom: 16 }}>
               <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 38, color: accent }}>
                 {product.price.toLocaleString("sr-RS")}
@@ -104,7 +100,6 @@ export default function QuickViewModal({ team, onClose, onAddToCart, onWish, wis
               <span style={{ fontSize: 16, color: "rgba(255,255,255,0.4)", marginLeft: 5 }}>RSD</span>
             </div>
 
-            {/* Description (changes with kit type) */}
             <p style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", lineHeight: 1.6, marginBottom: 20 }}>
               {type === "home" ? team.descHome : team.descAway}
             </p>
@@ -116,7 +111,6 @@ export default function QuickViewModal({ team, onClose, onAddToCart, onWish, wis
               <QuantitySelector value={qty} onChange={setQty} accent={accent} />
             </div>
 
-            {/* Actions */}
             <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
               <button
                 onClick={() => onAddToCart({ ...product, size, qty })}
@@ -126,21 +120,26 @@ export default function QuickViewModal({ team, onClose, onAddToCart, onWish, wis
                   fontWeight: 800, fontSize: 15, cursor: "pointer",
                   fontFamily: "'Bebas Neue', sans-serif", letterSpacing: 2,
                 }}
-              >\uD83D\uDED2 DODAJ U KORPU</button>
+              >🛒 DODAJ U KORPU</button>
               <button
-                onClick={() => onWish(product)} aria-label="Lista zelja"
+                onClick={() => onWish(product)} aria-label="Lista želja"
                 style={{
                   width: 52, borderRadius: 12,
                   background: wished ? "rgba(255,77,109,0.15)" : "rgba(255,255,255,0.05)",
                   border: `1px solid ${wished ? "#ff4d6d55" : "rgba(255,255,255,0.12)"}`,
                   color: wished ? "#ff4d6d" : "#fff", fontSize: 20, cursor: "pointer",
                 }}
-              >{wished ? "\u2665" : "\u2661"}</button>
+              >{wished ? "♥" : "♡"}</button>
             </div>
 
-            {/* WhatsApp */}
             <div style={{ marginBottom: 18 }}>
               <WhatsAppButton product={product} size={size} qty={qty} full />
+            </div>
+
+            {/* Promo strip */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
+              <span style={promoPill("#00dcff")}>🚚 Besplatna dostava na sve porudžbine</span>
+              <span style={promoPill("#39ff14")}>🎁 Kupi 4 dresa i dobijaš Mystery Dres GRATIS</span>
             </div>
 
             <PromoPerks compact />
@@ -150,7 +149,7 @@ export default function QuickViewModal({ team, onClose, onAddToCart, onWish, wis
               onClick={onClose}
               style={{ marginTop: 14, textAlign: "center", color: accent, fontSize: 13, fontWeight: 700, textDecoration: "none" }}
             >
-              Pogledaj celu stranicu proizvoda \u2192
+              Pogledaj celu stranicu proizvoda →
             </a>
           </div>
         </div>
@@ -160,6 +159,14 @@ export default function QuickViewModal({ team, onClose, onAddToCart, onWish, wis
 }
 
 const selLabel = { fontSize: 12, color: "rgba(255,255,255,0.5)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8, fontWeight: 600 };
+
+function promoPill(color) {
+  return {
+    display: "inline-flex", alignItems: "center", gap: 8,
+    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 10, padding: "9px 12px", fontSize: 12.5, fontWeight: 700, color,
+  };
+}
 
 function Toggle({ active, onClick, accent, children }) {
   return (

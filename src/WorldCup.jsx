@@ -27,13 +27,12 @@ function TeamCard({ t, onOpen }) {
           <ProductImage src={t.images[0]} alt={`${t.team} dres 2026`} colors={t.colors} version="fan" />
         </div>
 
-        {/* Variant hint badge */}
         <div style={{
           position: "absolute", top: 12, right: 12, zIndex: 3,
           background: "rgba(0,0,0,0.55)", border: "1px solid rgba(255,255,255,0.15)",
           color: "#fff", borderRadius: 6, padding: "4px 9px",
           fontSize: 10, fontWeight: 700, letterSpacing: 0.5
-        }}>Domaci / Gostujuci</div>
+        }}>Domaći / Gostujući</div>
 
         {hovered && (
           <div style={{
@@ -45,7 +44,7 @@ function TeamCard({ t, onOpen }) {
               background: "rgba(0,0,0,0.7)", border: `1px solid ${accent}`,
               color: accent, padding: "9px 20px", borderRadius: 99,
               fontSize: 12, fontWeight: 700, letterSpacing: 1
-            }}>\uD83D\uDC41 IZABERI DRES</span>
+            }}>👁 IZABERI DRES</span>
           </div>
         )}
       </div>
@@ -67,7 +66,7 @@ function TeamCard({ t, onOpen }) {
             background: `linear-gradient(135deg, ${accent}, ${accent}bb)`,
             color: "#000", borderRadius: 9, padding: "9px 16px",
             fontWeight: 800, fontSize: 12
-          }}>Izaberi \u2192</span>
+          }}>Izaberi →</span>
         </div>
       </div>
     </div>
@@ -109,35 +108,40 @@ export default function WorldCup({ onAddToCart, onWish, wishlist }) {
     <div style={{ background: "#05050e", minHeight: "100vh", fontFamily: "'Outfit', sans-serif", color: "#fff" }}>
       <section style={{ padding: "50px 1.5rem 36px", maxWidth: 1280, margin: "0 auto", textAlign: "center", position: "relative" }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 70% 60% at 50% 0%, rgba(0,220,255,0.1) 0%, transparent 60%)", pointerEvents: "none" }} />
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(57,255,20,0.08)", border: "1px solid rgba(57,255,20,0.2)", borderRadius: 999, padding: "6px 16px", marginBottom: 22, fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: "#39ff14", textTransform: "uppercase" }}>\uD83C\uDFC6 Zvanicna kolekcija</div>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(57,255,20,0.08)", border: "1px solid rgba(57,255,20,0.2)", borderRadius: 999, padding: "6px 16px", marginBottom: 22, fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: "#39ff14", textTransform: "uppercase" }}>🏆 Zvanična kolekcija</div>
         <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(2.8rem, 8vw, 6rem)", lineHeight: 0.95, color: "#fff", marginBottom: 16, position: "relative" }}>
           SVETSKO PRVENSTVO<br />
           <span style={{ background: "linear-gradient(90deg, #00dcff, #39ff14)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>2026 KOLEKCIJA</span>
         </h1>
         <p style={{ fontSize: "clamp(0.95rem, 2vw, 1.15rem)", color: "rgba(255,255,255,0.55)", maxWidth: 560, margin: "0 auto", lineHeight: 1.6, position: "relative" }}>
-          Dresovi svih reprezentacija na Mundijalu 2026. Izaberi svoj tim, pa u kartici odaberi domaci ili gostujuci, Fan ili Player verziju.
+          Dresovi svih reprezentacija na Mundijalu 2026. Izaberi svoj tim, pa u kartici odaberi domaći ili gostujući, Fan ili Player verziju.
         </p>
 
-        {/* Promo strip (kept in-page, banner removed from top) */}
-        <div style={{ display: "inline-flex", gap: 18, flexWrap: "wrap", justifyContent: "center", marginTop: 24, position: "relative" }}>
-          <span style={promoPill}>\uD83D\uDE9A Besplatna dostava na sve porudzbine</span>
-          <span style={promoPill}>\uD83C\uDF81 Kupi 4 dresa \u2192 Mystery Dres GRATIS</span>
+        <div style={{ display: "inline-flex", gap: 14, flexWrap: "wrap", justifyContent: "center", marginTop: 24, position: "relative" }}>
+          <span style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            background: "rgba(0,220,255,0.08)", border: "1px solid rgba(0,220,255,0.2)",
+            borderRadius: 999, padding: "8px 16px", fontSize: 13, fontWeight: 700, color: "#00dcff"
+          }}>🚚 Besplatna dostava na sve porudžbine</span>
+          <span style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            background: "rgba(57,255,20,0.08)", border: "1px solid rgba(57,255,20,0.2)",
+            borderRadius: 999, padding: "8px 16px", fontSize: 13, fontWeight: 700, color: "#39ff14"
+          }}>🎁 Kupi 4 dresa i dobijaš Mystery Dres GRATIS</span>
         </div>
       </section>
 
       <section style={{ maxWidth: 1280, margin: "0 auto", padding: "0 1.5rem 32px" }}>
-        {/* Search */}
         <div style={{ display: "flex", gap: 12, alignItems: "center", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(0,220,255,0.2)", borderRadius: 14, padding: "13px 18px", marginBottom: 24, maxWidth: 560 }}>
-          <span style={{ color: "#00dcff", fontSize: 18 }}>\uD83D\uDD0D</span>
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Pretrazi reprezentaciju (npr. Argentina, Srbija...)" style={{ background: "none", border: "none", outline: "none", color: "#fff", fontSize: 15, flex: 1 }} />
-          {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 16 }}>\u2715</button>}
+          <span style={{ color: "#00dcff", fontSize: 18 }}>🔍</span>
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Pretraži reprezentaciju (npr. Argentina, Brazil...)" style={{ background: "none", border: "none", outline: "none", color: "#fff", fontSize: 15, flex: 1 }} />
+          {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 16 }}>✕</button>}
         </div>
 
-        {/* Country filter only */}
         <div>
-          <div style={fLabel}>Drzava ({WC_TEAMS.length})</div>
+          <div style={fLabel}>Država ({WC_TEAMS.length})</div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", maxHeight: 96, overflowY: "auto", paddingBottom: 4 }}>
-            <FilterChip active={country === "all"} onClick={() => setCountry("all")}>\uD83C\uDF0D Sve drzave</FilterChip>
+            <FilterChip active={country === "all"} onClick={() => setCountry("all")}>🌍 Sve države</FilterChip>
             {WC_TEAMS.map((t) => (
               <FilterChip key={t.id} active={country === t.id} onClick={() => setCountry(t.id)}>{t.flag} {t.name}</FilterChip>
             ))}
@@ -152,9 +156,9 @@ export default function WorldCup({ onAddToCart, onWish, wishlist }) {
       <section style={{ maxWidth: 1280, margin: "0 auto", padding: "0 1.5rem 60px" }}>
         {filtered.length === 0 ? (
           <div style={{ textAlign: "center", padding: "80px 0", color: "rgba(255,255,255,0.4)" }}>
-            <div style={{ fontSize: 56, marginBottom: 16 }}>\uD83D\uDD0D</div>
+            <div style={{ fontSize: 56, marginBottom: 16 }}>🔍</div>
             <div style={{ fontSize: 18, fontWeight: 700, color: "#fff", marginBottom: 8 }}>Nema rezultata</div>
-            <div>Pokusaj sa drugom pretragom.</div>
+            <div>Pokušaj sa drugom pretragom.</div>
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 22 }}>
@@ -177,10 +181,3 @@ export default function WorldCup({ onAddToCart, onWish, wishlist }) {
     </div>
   );
 }
-
-const promoPill = {
-  background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(255,255,255,0.1)",
-  borderRadius: 999, padding: "8px 16px",
-  fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.75)"
-};
