@@ -1,16 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import ProductGallery from "./ProductGallery.jsx";
 import SizeSelector from "./SizeSelector.jsx";
 import QuantitySelector from "./QuantitySelector.jsx";
 import PromoPerks from "./PromoPerks.jsx";
 import WhatsAppButton from "./WhatsAppButton.jsx";
+import { getVariant } from "../products.js";
 
-export default function QuickViewModal({ product, onClose, onAddToCart, onWish, wished }) {
+// `team` is a TEAM_CARDS entry. The modal lets the user pick kit type + version,
+// then resolves to the concrete product variant for cart / wishlist / WhatsApp.
+export default function QuickViewModal({ team, onClose, onAddToCart, onWish, wishlist }) {
+  const [type, setType] = useState("home"); // home | away
+  const [version, setVersion] = useState("fan"); // fan | player
   const [size, setSize] = useState("M");
   const [qty, setQty] = useState(1);
-  const accent = product.version === "player" ? "#4ade80" : "#22d3ee";
 
-  // Lock scroll + ESC to close
+  const product = useMemo(() => getVariant(team.teamId, type, version), [team, type, version]);
+  const accent = version === "player" ? "#4ade80" : "#22d3ee";
+  const wished = product ? wishlist.includes(product.id) : false;
+
   useEffect(() => {
     const onKey = (e) => e.key === "Escape" && onClose();
     document.body.style.overflow = "hidden";
@@ -21,81 +28,75 @@ export default function QuickViewModal({ product, onClose, onAddToCart, onWish, 
     };
   }, [onClose]);
 
+  if (!product) return null;
+
   return (
     <div
       onClick={onClose}
       style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 1000,
-        background: "rgba(0,0,0,0.82)",
-        backdropFilter: "blur(12px)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "20px",
-        overflowY: "auto",
+        position: "fixed", inset: 0, zIndex: 1000,
+        background: "rgba(0,0,0,0.82)", backdropFilter: "blur(12px)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: "20px", overflowY: "auto",
       }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          background: "#0a0a14",
-          border: `1px solid ${accent}33`,
-          borderRadius: 22,
-          maxWidth: 920,
-          width: "100%",
-          maxHeight: "92vh",
-          overflowY: "auto",
-          position: "relative",
+          background: "#0a0a14", border: `1px solid ${accent}33`,
+          borderRadius: 22, maxWidth: 920, width: "100%",
+          maxHeight: "92vh", overflowY: "auto", position: "relative",
           animation: "modalIn 0.3s ease",
         }}
       >
-        {/* Close */}
         <button
-          onClick={onClose}
-          aria-label="Zatvori"
+          onClick={onClose} aria-label="Zatvori"
           style={{
-            position: "absolute",
-            top: 16,
-            right: 16,
-            zIndex: 10,
-            width: 38,
-            height: 38,
-            borderRadius: 10,
-            background: "rgba(0,0,0,0.5)",
-            border: "1px solid rgba(255,255,255,0.15)",
-            color: "#fff",
-            fontSize: 18,
-            cursor: "pointer",
+            position: "absolute", top: 16, right: 16, zIndex: 10,
+            width: 38, height: 38, borderRadius: 10,
+            background: "rgba(0,0,0,0.5)", border: "1px solid rgba(255,255,255,0.15)",
+            color: "#fff", fontSize: 18, cursor: "pointer",
           }}
-        >
-          ✕
-        </button>
+        >✕</button>
 
         <div className="qv-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28, padding: 28 }}>
-          {/* Gallery */}
           <ProductGallery product={product} height={380} />
 
-          {/* Info */}
           <div style={{ display: "flex", flexDirection: "column" }}>
-            {/* Badges */}
-            <div style={{ display: "flex", gap: 8, marginBottom: 14, flexWrap: "wrap" }}>
-              <span style={{ ...badge, background: "rgba(255,255,255,0.08)", color: "#fff" }}>
-                {product.flag} {product.team}
-              </span>
-              <span style={{ ...badge, background: "rgba(0,220,255,0.12)", color: "#00dcff", border: "1px solid rgba(0,220,255,0.3)" }}>
-                {product.typeLabel}
-              </span>
-              <span style={{ ...badge, background: `${accent}22`, color: accent, border: `1px solid ${accent}55` }}>
-                {product.versionLabel}
-              </span>
+            {/* Team header */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+              <span style={{ fontSize: 26 }}>{team.flag}</span>
+              <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 32, color: "#fff", letterSpacing: 0.5, lineHeight: 1 }}>
+                {team.team}
+              </h2>
+            </div>
+            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 18 }}>
+              Dres za Svetsko prvenstvo 2026
             </div>
 
-            <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 30, color: "#fff", letterSpacing: 0.5, lineHeight: 1.05, marginBottom: 12 }}>
-              {product.title}
-            </h2>
+            {/* Kit type toggle */}
+            <div style={{ marginBottom: 16 }}>
+              <div style={selLabel}>Tip dresa</div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <Toggle active={type === "home"} onClick={() => setType("home")} accent={accent}>Domaci</Toggle>
+                <Toggle active={type === "away"} onClick={() => setType("away")} accent={accent}>Gostujuci</Toggle>
+              </div>
+            </div>
 
+            {/* Version toggle */}
+            <div style={{ marginBottom: 16 }}>
+              <div style={selLabel}>Verzija</div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <Toggle active={version === "fan"} onClick={() => setVersion("fan")} accent="#22d3ee">
+                  Fan \u00b7 4.200
+                </Toggle>
+                <Toggle active={version === "player"} onClick={() => setVersion("player")} accent="#4ade80">
+                  Player \u00b7 4.500
+                </Toggle>
+              </div>
+            </div>
+
+            {/* Price */}
             <div style={{ marginBottom: 16 }}>
               <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 38, color: accent }}>
                 {product.price.toLocaleString("sr-RS")}
@@ -103,8 +104,9 @@ export default function QuickViewModal({ product, onClose, onAddToCart, onWish, 
               <span style={{ fontSize: 16, color: "rgba(255,255,255,0.4)", marginLeft: 5 }}>RSD</span>
             </div>
 
+            {/* Description (changes with kit type) */}
             <p style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", lineHeight: 1.6, marginBottom: 20 }}>
-              {product.description}
+              {type === "home" ? team.descHome : team.descAway}
             </p>
 
             <div style={{ marginBottom: 18 }}>
@@ -115,56 +117,40 @@ export default function QuickViewModal({ product, onClose, onAddToCart, onWish, 
             </div>
 
             {/* Actions */}
-            <div style={{ display: "flex", gap: 10, marginBottom: 18 }}>
+            <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
               <button
                 onClick={() => onAddToCart({ ...product, size, qty })}
                 style={{
-                  flex: 1,
-                  background: `linear-gradient(135deg, ${accent}, ${accent}bb)`,
-                  color: "#000",
-                  border: "none",
-                  borderRadius: 12,
-                  padding: "15px",
-                  fontWeight: 800,
-                  fontSize: 15,
-                  cursor: "pointer",
-                  fontFamily: "'Bebas Neue', sans-serif",
-                  letterSpacing: 2,
+                  flex: 1, background: `linear-gradient(135deg, ${accent}, ${accent}bb)`,
+                  color: "#000", border: "none", borderRadius: 12, padding: "15px",
+                  fontWeight: 800, fontSize: 15, cursor: "pointer",
+                  fontFamily: "'Bebas Neue', sans-serif", letterSpacing: 2,
                 }}
-              >
-                🛒 DODAJ U KORPU
-              </button>
+              >\uD83D\uDED2 DODAJ U KORPU</button>
               <button
-                onClick={() => onWish(product)}
-                aria-label="Lista želja"
+                onClick={() => onWish(product)} aria-label="Lista zelja"
                 style={{
-                  width: 52,
-                  borderRadius: 12,
+                  width: 52, borderRadius: 12,
                   background: wished ? "rgba(255,77,109,0.15)" : "rgba(255,255,255,0.05)",
                   border: `1px solid ${wished ? "#ff4d6d55" : "rgba(255,255,255,0.12)"}`,
-                  color: wished ? "#ff4d6d" : "#fff",
-                  fontSize: 20,
-                  cursor: "pointer",
+                  color: wished ? "#ff4d6d" : "#fff", fontSize: 20, cursor: "pointer",
                 }}
-              >
-                {wished ? "♥" : "♡"}
-              </button>
+              >{wished ? "\u2665" : "\u2661"}</button>
             </div>
 
-            {/* WhatsApp order */}
+            {/* WhatsApp */}
             <div style={{ marginBottom: 18 }}>
               <WhatsAppButton product={product} size={size} qty={qty} full />
             </div>
 
             <PromoPerks compact />
 
-            {/* Full page link */}
             <a
               href={`#/world-cup/${product.slug}`}
               onClick={onClose}
               style={{ marginTop: 14, textAlign: "center", color: accent, fontSize: 13, fontWeight: 700, textDecoration: "none" }}
             >
-              Pogledaj celu stranicu proizvoda →
+              Pogledaj celu stranicu proizvoda \u2192
             </a>
           </div>
         </div>
@@ -173,10 +159,19 @@ export default function QuickViewModal({ product, onClose, onAddToCart, onWish, 
   );
 }
 
-const badge = {
-  borderRadius: 7,
-  padding: "5px 11px",
-  fontSize: 12,
-  fontWeight: 700,
-  letterSpacing: 0.5,
-};
+const selLabel = { fontSize: 12, color: "rgba(255,255,255,0.5)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8, fontWeight: 600 };
+
+function Toggle({ active, onClick, accent, children }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        flex: 1, padding: "11px 14px", borderRadius: 10,
+        background: active ? accent : "rgba(255,255,255,0.05)",
+        color: active ? "#000" : "rgba(255,255,255,0.7)",
+        border: active ? "none" : "1px solid rgba(255,255,255,0.12)",
+        fontWeight: 700, fontSize: 14, cursor: "pointer", transition: "all 0.15s",
+      }}
+    >{children}</button>
+  );
+}

@@ -1,54 +1,39 @@
 import { useState, useMemo } from "react";
-import { WC_TEAMS, SIZES } from "./teams.js";
-import { PRODUCTS } from "./products.js";
+import { WC_TEAMS } from "./teams.js";
+import { TEAM_CARDS } from "./products.js";
 import ProductImage from "./components/ProductImage.jsx";
 import QuickViewModal from "./components/QuickViewModal.jsx";
 
-function ProductCard({ p, onQuickView, onWish, wished }) {
+function TeamCard({ t, onOpen }) {
   const [hovered, setHovered] = useState(false);
-  const accent = p.version === "player" ? "#4ade80" : "#22d3ee";
+  const accent = "#22d3ee";
 
   return (
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={() => onOpen(t)}
       style={{
         background: "rgba(255,255,255,0.03)",
         border: `1px solid ${hovered ? accent + "40" : "rgba(255,255,255,0.08)"}`,
         borderRadius: 18, overflow: "hidden", transition: "all 0.3s",
         transform: hovered ? "translateY(-6px)" : "none",
         boxShadow: hovered ? `0 18px 50px ${accent}18` : "none",
-        display: "flex", flexDirection: "column",
+        display: "flex", flexDirection: "column", cursor: "pointer",
       }}
     >
-      <div style={{ height: 210, position: "relative", cursor: "pointer" }} onClick={() => onQuickView(p)}>
-        <button
-          onClick={(e) => { e.stopPropagation(); onWish(p); }}
-          aria-label="Lista zelja"
-          style={{
-            position: "absolute", top: 12, left: 12, zIndex: 3,
-            background: "rgba(0,0,0,0.5)", border: "1px solid rgba(255,255,255,0.15)",
-            borderRadius: 8, width: 34, height: 34, cursor: "pointer",
-            color: wished ? "#ff4d6d" : "#fff", fontSize: 15,
-            display: "flex", alignItems: "center", justifyContent: "center"
-          }}
-        >{wished ? "\u2665" : "\u2661"}</button>
-
-        <div style={{
-          position: "absolute", top: 12, right: 12, zIndex: 3,
-          background: accent, color: "#000", borderRadius: 6, padding: "4px 9px",
-          fontSize: 10, fontWeight: 800, letterSpacing: 1
-        }}>{p.version === "player" ? "PLAYER" : "FAN"}</div>
-
+      <div style={{ height: 230, position: "relative" }}>
         <div style={{ transition: "transform 0.4s", transform: hovered ? "scale(1.05)" : "scale(1)", height: "100%" }}>
-          <ProductImage src={p.images[0]} alt={p.title} colors={p.colors} version={p.version} />
+          <ProductImage src={t.images[0]} alt={`${t.team} dres 2026`} colors={t.colors} version="fan" />
         </div>
 
+        {/* Variant hint badge */}
         <div style={{
-          position: "absolute", bottom: 12, left: 12, zIndex: 2,
-          background: "rgba(0,0,0,0.55)", border: "1px solid rgba(255,255,255,0.12)",
-          borderRadius: 6, padding: "3px 9px", fontSize: 10, fontWeight: 700, color: "#fff"
-        }}>{p.typeLabel}</div>
+          position: "absolute", top: 12, right: 12, zIndex: 3,
+          background: "rgba(0,0,0,0.55)", border: "1px solid rgba(255,255,255,0.15)",
+          color: "#fff", borderRadius: 6, padding: "4px 9px",
+          fontSize: 10, fontWeight: 700, letterSpacing: 0.5
+        }}>Domaci / Gostujuci</div>
 
         {hovered && (
           <div style={{
@@ -58,38 +43,31 @@ function ProductCard({ p, onQuickView, onWish, wished }) {
           }}>
             <span style={{
               background: "rgba(0,0,0,0.7)", border: `1px solid ${accent}`,
-              color: accent, padding: "8px 18px", borderRadius: 99,
+              color: accent, padding: "9px 20px", borderRadius: 99,
               fontSize: 12, fontWeight: 700, letterSpacing: 1
-            }}>\uD83D\uDC41 BRZI PREGLED</span>
+            }}>\uD83D\uDC41 IZABERI DRES</span>
           </div>
         )}
       </div>
 
-      <div style={{ padding: "16px 16px 18px", display: "flex", flexDirection: "column", flex: 1 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-          <span style={{ fontSize: 20 }}>{p.flag}</span>
-          <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 19, color: "#fff", letterSpacing: 0.8, lineHeight: 1 }}>{p.team}</h3>
+      <div style={{ padding: "18px 18px 20px", display: "flex", flexDirection: "column", flex: 1 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+          <span style={{ fontSize: 24 }}>{t.flag}</span>
+          <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, color: "#fff", letterSpacing: 0.8, lineHeight: 1 }}>{t.team}</h3>
         </div>
-        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", lineHeight: 1.5, marginBottom: 14, flex: 1 }}>
-          {p.description.length > 90 ? p.description.slice(0, 90) + "\u2026" : p.description}
-        </p>
+        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 16 }}>{t.conf}</div>
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "auto" }}>
           <div>
-            <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 26, color: accent }}>{p.price.toLocaleString("sr-RS")}</span>
+            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>od</span>{" "}
+            <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 24, color: accent }}>4.200</span>
             <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginLeft: 3 }}>RSD</span>
           </div>
-          <button
-            onClick={() => onQuickView(p)}
-            style={{
-              background: `linear-gradient(135deg, ${accent}, ${accent}bb)`,
-              color: "#000", border: "none", borderRadius: 9,
-              padding: "9px 16px", fontWeight: 800, fontSize: 12, cursor: "pointer",
-              transition: "transform 0.15s"
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.06)")}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
-          >Brzi pregled \u2192</button>
+          <span style={{
+            background: `linear-gradient(135deg, ${accent}, ${accent}bb)`,
+            color: "#000", borderRadius: 9, padding: "9px 16px",
+            fontWeight: 800, fontSize: 12
+          }}>Izaberi \u2192</span>
         </div>
       </div>
     </div>
@@ -114,27 +92,18 @@ const fLabel = { fontSize: 11, color: "rgba(255,255,255,0.4)", letterSpacing: 1.
 export default function WorldCup({ onAddToCart, onWish, wishlist }) {
   const [search, setSearch] = useState("");
   const [country, setCountry] = useState("all");
-  const [size, setSize] = useState("all");
-  const [kitFilter, setKitFilter] = useState("all");
-  const [versionFilter, setVersionFilter] = useState("all");
-  const [visible, setVisible] = useState(24);
-  const [quickView, setQuickView] = useState(null);
+  const [openTeam, setOpenTeam] = useState(null);
 
   const filtered = useMemo(() => {
-    return PRODUCTS.filter((p) => {
-      if (country !== "all" && p.teamId !== country) return false;
-      if (kitFilter !== "all" && p.type !== kitFilter) return false;
-      if (versionFilter !== "all" && p.version !== versionFilter) return false;
-      if (size !== "all" && !p.sizes.includes(size)) return false;
+    return TEAM_CARDS.filter((t) => {
+      if (country !== "all" && t.teamId !== country) return false;
       if (search) {
         const q = search.toLowerCase();
-        if (!p.team.toLowerCase().includes(q) && !p.conf.toLowerCase().includes(q) && !p.title.toLowerCase().includes(q)) return false;
+        if (!t.team.toLowerCase().includes(q) && !t.conf.toLowerCase().includes(q)) return false;
       }
       return true;
     });
-  }, [country, kitFilter, versionFilter, size, search]);
-
-  const shown = filtered.slice(0, visible);
+  }, [country, search]);
 
   return (
     <div style={{ background: "#05050e", minHeight: "100vh", fontFamily: "'Outfit', sans-serif", color: "#fff" }}>
@@ -146,94 +115,72 @@ export default function WorldCup({ onAddToCart, onWish, wishlist }) {
           <span style={{ background: "linear-gradient(90deg, #00dcff, #39ff14)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>2026 KOLEKCIJA</span>
         </h1>
         <p style={{ fontSize: "clamp(0.95rem, 2vw, 1.15rem)", color: "rgba(255,255,255,0.55)", maxWidth: 560, margin: "0 auto", lineHeight: 1.6, position: "relative" }}>
-          Svi dresovi reprezentacija na Mundijalu 2026. Domaci i gostujuci, Fan i Player verzije.
-          Dostupno {WC_TEAMS.length} nacija \u00b7 {PRODUCTS.length} modela.
+          Dresovi svih reprezentacija na Mundijalu 2026. Izaberi svoj tim, pa u kartici odaberi domaci ili gostujuci, Fan ili Player verziju.
         </p>
+
+        {/* Promo strip (kept in-page, banner removed from top) */}
+        <div style={{ display: "inline-flex", gap: 18, flexWrap: "wrap", justifyContent: "center", marginTop: 24, position: "relative" }}>
+          <span style={promoPill}>\uD83D\uDE9A Besplatna dostava na sve porudzbine</span>
+          <span style={promoPill}>\uD83C\uDF81 Kupi 4 dresa \u2192 Mystery Dres GRATIS</span>
+        </div>
       </section>
 
       <section style={{ maxWidth: 1280, margin: "0 auto", padding: "0 1.5rem 32px" }}>
+        {/* Search */}
         <div style={{ display: "flex", gap: 12, alignItems: "center", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(0,220,255,0.2)", borderRadius: 14, padding: "13px 18px", marginBottom: 24, maxWidth: 560 }}>
           <span style={{ color: "#00dcff", fontSize: 18 }}>\uD83D\uDD0D</span>
-          <input value={search} onChange={(e) => { setSearch(e.target.value); setVisible(24); }} placeholder="Pretrazi reprezentaciju (npr. Argentina, Srbija...)" style={{ background: "none", border: "none", outline: "none", color: "#fff", fontSize: 15, flex: 1 }} />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Pretrazi reprezentaciju (npr. Argentina, Srbija...)" style={{ background: "none", border: "none", outline: "none", color: "#fff", fontSize: 15, flex: 1 }} />
           {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 16 }}>\u2715</button>}
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
-            <div>
-              <div style={fLabel}>Verzija</div>
-              <div style={{ display: "flex", gap: 8 }}>
-                <FilterChip active={versionFilter === "all"} onClick={() => { setVersionFilter("all"); setVisible(24); }}>Sve</FilterChip>
-                <FilterChip active={versionFilter === "fan"} onClick={() => { setVersionFilter("fan"); setVisible(24); }}>Fan (4.200)</FilterChip>
-                <FilterChip active={versionFilter === "player"} onClick={() => { setVersionFilter("player"); setVisible(24); }}>Player (4.500)</FilterChip>
-              </div>
-            </div>
-            <div>
-              <div style={fLabel}>Tip dresa</div>
-              <div style={{ display: "flex", gap: 8 }}>
-                <FilterChip active={kitFilter === "all"} onClick={() => { setKitFilter("all"); setVisible(24); }}>Svi</FilterChip>
-                <FilterChip active={kitFilter === "home"} onClick={() => { setKitFilter("home"); setVisible(24); }}>Domaci</FilterChip>
-                <FilterChip active={kitFilter === "away"} onClick={() => { setKitFilter("away"); setVisible(24); }}>Gostujuci</FilterChip>
-              </div>
-            </div>
-            <div>
-              <div style={fLabel}>Velicina</div>
-              <div style={{ display: "flex", gap: 6 }}>
-                <FilterChip active={size === "all"} onClick={() => { setSize("all"); setVisible(24); }}>Sve</FilterChip>
-                {SIZES.map((s) => (
-                  <FilterChip key={s} active={size === s} onClick={() => { setSize(s); setVisible(24); }}>{s}</FilterChip>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <div style={fLabel}>Drzava ({WC_TEAMS.length})</div>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", maxHeight: 96, overflowY: "auto", paddingBottom: 4 }}>
-              <FilterChip active={country === "all"} onClick={() => { setCountry("all"); setVisible(24); }}>\uD83C\uDF0D Sve drzave</FilterChip>
-              {WC_TEAMS.map((t) => (
-                <FilterChip key={t.id} active={country === t.id} onClick={() => { setCountry(t.id); setVisible(24); }}>{t.flag} {t.name}</FilterChip>
-              ))}
-            </div>
+        {/* Country filter only */}
+        <div>
+          <div style={fLabel}>Drzava ({WC_TEAMS.length})</div>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", maxHeight: 96, overflowY: "auto", paddingBottom: 4 }}>
+            <FilterChip active={country === "all"} onClick={() => setCountry("all")}>\uD83C\uDF0D Sve drzave</FilterChip>
+            {WC_TEAMS.map((t) => (
+              <FilterChip key={t.id} active={country === t.id} onClick={() => setCountry(t.id)}>{t.flag} {t.name}</FilterChip>
+            ))}
           </div>
         </div>
 
         <div style={{ marginTop: 24, fontSize: 13, color: "rgba(255,255,255,0.4)" }}>
-          Prikazano <strong style={{ color: "#00dcff" }}>{Math.min(visible, filtered.length)}</strong> od <strong style={{ color: "#fff" }}>{filtered.length}</strong> dresova
+          Prikazano <strong style={{ color: "#00dcff" }}>{filtered.length}</strong> reprezentacija
         </div>
       </section>
 
       <section style={{ maxWidth: 1280, margin: "0 auto", padding: "0 1.5rem 60px" }}>
-        {shown.length === 0 ? (
+        {filtered.length === 0 ? (
           <div style={{ textAlign: "center", padding: "80px 0", color: "rgba(255,255,255,0.4)" }}>
             <div style={{ fontSize: 56, marginBottom: 16 }}>\uD83D\uDD0D</div>
             <div style={{ fontSize: 18, fontWeight: 700, color: "#fff", marginBottom: 8 }}>Nema rezultata</div>
-            <div>Pokusaj sa drugim filterima ili pretragom.</div>
+            <div>Pokusaj sa drugom pretragom.</div>
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 20 }}>
-            {shown.map((p) => (
-              <ProductCard key={p.id} p={p} onQuickView={setQuickView} onWish={onWish} wished={wishlist.includes(p.id)} />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 22 }}>
+            {filtered.map((t) => (
+              <TeamCard key={t.teamId} t={t} onOpen={setOpenTeam} />
             ))}
-          </div>
-        )}
-
-        {visible < filtered.length && (
-          <div style={{ textAlign: "center", marginTop: 40 }}>
-            <button onClick={() => setVisible((v) => v + 24)} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(0,220,255,0.3)", color: "#00dcff", borderRadius: 12, padding: "14px 32px", fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "'Bebas Neue', sans-serif", letterSpacing: 2 }}>UCITAJ JOS DRESOVA ({filtered.length - visible}) \u2192</button>
           </div>
         )}
       </section>
 
-      {quickView && (
+      {openTeam && (
         <QuickViewModal
-          product={quickView}
-          onClose={() => setQuickView(null)}
-          onAddToCart={(item) => { onAddToCart(item); setQuickView(null); }}
+          team={openTeam}
+          onClose={() => setOpenTeam(null)}
+          onAddToCart={(item) => { onAddToCart(item); setOpenTeam(null); }}
           onWish={onWish}
-          wished={wishlist.includes(quickView.id)}
+          wishlist={wishlist}
         />
       )}
     </div>
   );
 }
+
+const promoPill = {
+  background: "rgba(255,255,255,0.04)",
+  border: "1px solid rgba(255,255,255,0.1)",
+  borderRadius: 999, padding: "8px 16px",
+  fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.75)"
+};

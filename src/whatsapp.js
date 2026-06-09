@@ -2,7 +2,7 @@
 // Set your store's WhatsApp number here (international format, digits only, no + or spaces).
 // Example for Serbia: country code 381 + number without leading 0.
 //   Local 064 123 4567  ->  381641234567
-export const WHATSAPP_NUMBER = "381668128438"; // TODO: replace with the real store number
+export const WHATSAPP_NUMBER = "381600000000"; // TODO: replace with the real store number
 
 // Builds a prefilled Serbian order message and returns a wa.me URL.
 export function buildWhatsAppOrderUrl(product, { size, qty } = {}) {

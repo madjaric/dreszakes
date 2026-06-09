@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import WorldCup from "./WorldCup.jsx";
-import PromoBanner from "./components/PromoBanner.jsx";
 import ProductPage from "./components/ProductPage.jsx";
 import CoverageDashboard from "./components/CoverageDashboard.jsx";
 
@@ -100,7 +99,7 @@ function Navbar({ cartCount, wishCount, onCart, onSearch }) {
   return (
     <nav
       style={{
-        position: "fixed", top: 39, left: 0, right: 0, zIndex: 100,
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
         transition: "all 0.4s",
         background: scrolled
           ? "rgba(5,5,10,0.95)"
@@ -297,6 +296,22 @@ function HeroSection() {
             onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(57,255,20,0.4)"; e.currentTarget.style.color = "#39ff14"; }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = "#fff"; }}
           >🏆 SP 2026 Kolekcija →</a>
+        </div>
+
+        {/* Promo strip (moved here from the removed top banner) */}
+        <div style={{
+          display: "flex", gap: 14, justifyContent: "center", marginTop: 28, flexWrap: "wrap"
+        }}>
+          <span style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            background: "rgba(0,220,255,0.08)", border: "1px solid rgba(0,220,255,0.2)",
+            borderRadius: 999, padding: "8px 16px", fontSize: 13, fontWeight: 700, color: "#00dcff"
+          }}>🚚 Besplatna dostava na sve porudžbine</span>
+          <span style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            background: "rgba(57,255,20,0.08)", border: "1px solid rgba(57,255,20,0.2)",
+            borderRadius: 999, padding: "8px 16px", fontSize: 13, fontWeight: 700, color: "#39ff14"
+          }}>🎁 Kupi 4 dresa → Mystery Dres GRATIS</span>
         </div>
 
         {/* Stats row */}
@@ -1055,15 +1070,7 @@ export default function DresZaKes() {
 
   return (
     <div style={{ background: "#05050e", minHeight: "100vh", fontFamily: "'Outfit', sans-serif", color: "#fff" }}>
-      {/* Global promo banner — fixed above navbar on all pages */}
-      <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 101 }}>
-        <PromoBanner />
-      </div>
-
       <Navbar cartCount={cartItems.length} wishCount={wishlist.length} onCart={() => setCartOpen(true)} onSearch={() => setSearchOpen(true)} />
-
-      {/* Spacer for fixed banner (navbar is also fixed and offset in its own component) */}
-      <div style={{ height: 39 }} />
 
       {route.name === "worldcup" && (
         <div style={{ paddingTop: 68 }}>

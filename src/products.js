@@ -101,4 +101,24 @@ export function getRelated(slug, limit = 4) {
   return out.slice(0, limit);
 }
 
+// Look up a specific product variant by team + kit type + version.
+export function getVariant(teamId, type, version) {
+  return PRODUCTS_BY_SLUG[`${teamId}-${type}-${version}`] || null;
+}
+
+// One representative product per team (home/fan), for the team-centric grid.
+export const TEAM_CARDS = WC_TEAMS.map((t) => {
+  const base = getVariant(t.id, "home", "fan");
+  return {
+    teamId: t.id,
+    team: t.name,
+    flag: t.flag,
+    conf: t.conf,
+    colors: t.home,
+    images: base ? base.images : [],
+    descHome: t.descHome,
+    descAway: t.descAway,
+  };
+});
+
 export { SIZES };
