@@ -3,6 +3,7 @@ import ProductGallery from "./ProductGallery.jsx";
 import SizeSelector from "./SizeSelector.jsx";
 import QuantitySelector from "./QuantitySelector.jsx";
 import PromoPerks from "./PromoPerks.jsx";
+import WhatsAppButton from "./WhatsAppButton.jsx";
 
 export default function QuickViewModal({ product, onClose, onAddToCart, onWish, wished }) {
   const [size, setSize] = useState("M");
@@ -148,6 +149,11 @@ export default function QuickViewModal({ product, onClose, onAddToCart, onWish, 
               >
                 {wished ? "♥" : "♡"}
               </button>
+            </div>
+
+            {/* WhatsApp order */}
+            <div style={{ marginBottom: 18 }}>
+              <WhatsAppButton product={product} size={size} qty={qty} full />
             </div>
 
             <PromoPerks compact />

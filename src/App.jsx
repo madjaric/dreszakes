@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import WorldCup from "./WorldCup.jsx";
+import PromoBanner from "./components/PromoBanner.jsx";
+import ProductPage from "./components/ProductPage.jsx";
+import CoverageDashboard from "./components/CoverageDashboard.jsx";
 
 const NAV_LINKS = [
   { label: "Početna", href: "#/" },
@@ -97,7 +100,7 @@ function Navbar({ cartCount, wishCount, onCart, onSearch }) {
   return (
     <nav
       style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
+        position: "fixed", top: 39, left: 0, right: 0, zIndex: 100,
         transition: "all 0.4s",
         background: scrolled
           ? "rgba(5,5,10,0.95)"
@@ -883,22 +886,38 @@ function Footer() {
 
 // Cart modal
 function CartModal({ items, onClose }) {
-  const total = items.reduce((s, i) => s + parseInt(i.price.replace(".", "")), 0);
+  const priceNum = (p) => typeof p === "number" ? p : parseInt(String(p).replace(/\./g, ""), 10) || 0;
+  const total = items.reduce((s, i) => s + priceNum(i.price) * (i.qty || 1), 0);
+  const totalQty = items.reduce((s, i) => s + (i.qty || 1), 0);
+  const freeMystery = totalQty >= 4;
+
   return (
     <div style={{
-      position: "fixed", inset: 0, zIndex: 999,
+      position: "fixed", inset: 0, zIndex: 1001,
       background: "rgba(0,0,0,0.8)", backdropFilter: "blur(10px)",
       display: "flex", alignItems: "flex-end", justifyContent: "flex-end"
     }} onClick={onClose}>
       <div onClick={e => e.stopPropagation()} style={{
         background: "#0a0a12", border: "1px solid rgba(0,220,255,0.2)",
         borderRadius: "20px 0 0 0", width: "100%", maxWidth: 420,
-        height: "100vh", maxHeight: "90vh", overflow: "auto",
+        height: "100vh", maxHeight: "100vh", overflow: "auto",
         padding: 28, display: "flex", flexDirection: "column"
       }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
           <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 26, color: "#fff", letterSpacing: 2 }}>KORPA 🛒</div>
           <button onClick={onClose} style={{ background: "rgba(255,255,255,0.08)", border: "none", borderRadius: 8, width: 36, height: 36, cursor: "pointer", color: "#fff", fontSize: 18 }}>✕</button>
+        </div>
+
+        {/* Promo strip in cart */}
+        <div style={{
+          background: "linear-gradient(90deg, rgba(0,220,255,0.1), rgba(57,255,20,0.1))",
+          border: "1px solid rgba(57,255,20,0.2)", borderRadius: 10,
+          padding: "10px 12px", marginBottom: 20, fontSize: 12, color: "rgba(255,255,255,0.85)", lineHeight: 1.5
+        }}>
+          🚚 Besplatna dostava na sve porudžbine<br />
+          🎁 {freeMystery
+            ? <strong style={{ color: "#39ff14" }}>Čestitamo! Dobijaš Mystery Dres GRATIS 🎉</strong>
+            : `Dodaj još ${4 - totalQty} ${4 - totalQty === 1 ? "dres" : "dresa"} za Mystery Dres GRATIS`}
         </div>
 
         {items.length === 0 ? (
@@ -917,13 +936,15 @@ function CartModal({ items, onClose }) {
                   <div style={{
                     width: 52, height: 52, borderRadius: 10, flexShrink: 0,
                     background: `rgba(0,220,255,0.1)`, border: "1px solid rgba(0,220,255,0.2)",
-                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20
-                  }}>{item.emoji}</div>
+                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22
+                  }}>{item.flag || item.emoji || "⚽"}</div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>{item.name}</div>
-                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>1x komad</div>
+                    <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>{item.team || item.name}</div>
+                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>
+                      {(item.qty || 1)}x{item.size ? ` · ${item.size}` : ""}{item.versionLabel ? ` · ${item.versionLabel}` : ""}
+                    </div>
                   </div>
-                  <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 20, color: "#00dcff" }}>{item.price} RSD</div>
+                  <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 20, color: "#00dcff" }}>{(priceNum(item.price) * (item.qty || 1)).toLocaleString("sr-RS")} RSD</div>
                 </div>
               ))}
             </div>
@@ -931,7 +952,7 @@ function CartModal({ items, onClose }) {
             <div style={{ marginTop: 24 }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
                 <span style={{ color: "rgba(255,255,255,0.5)" }}>Ukupno:</span>
-                <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 24, color: "#fff" }}>{total.toLocaleString()} RSD</span>
+                <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 24, color: "#fff" }}>{total.toLocaleString("sr-RS")} RSD</span>
               </div>
               <button style={{
                 width: "100%", background: "linear-gradient(135deg, #00dcff, #0099cc)",
@@ -991,18 +1012,28 @@ function SearchModal({ onClose }) {
   );
 }
 
+function parseRoute() {
+  if (typeof window === "undefined") return { name: "home" };
+  const hash = window.location.hash.replace(/^#/, "");
+  if (hash === "/coverage") return { name: "coverage" };
+  // #/world-cup/:slug
+  const productMatch = hash.match(/^\/world-cup\/(.+)$/);
+  if (productMatch) return { name: "product", slug: productMatch[1] };
+  if (hash.startsWith("/world-cup")) return { name: "worldcup" };
+  return { name: "home" };
+}
+
 export default function DresZaKes() {
   const [cartItems, setCartItems] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [toast, setToast] = useState(null);
-  const [route, setRoute] = useState(
-    typeof window !== "undefined" && window.location.hash.includes("world-cup") ? "worldcup" : "home"
-  );
+  const [wishlist, setWishlist] = useState([]);
+  const [route, setRoute] = useState(parseRoute());
 
   useEffect(() => {
     const onHash = () => {
-      setRoute(window.location.hash.includes("world-cup") ? "worldcup" : "home");
+      setRoute(parseRoute());
       window.scrollTo(0, 0);
     };
     window.addEventListener("hashchange", onHash);
@@ -1010,20 +1041,49 @@ export default function DresZaKes() {
   }, []);
 
   const addToCart = (product) => {
-    setCartItems(prev => [...prev, product]);
-    setToast(`${product.name || product.team} dodat u korpu! 🛒`);
+    const qty = product.qty || 1;
+    setCartItems(prev => [...prev, { ...product, qty }]);
+    setToast(`${product.team || product.name} dodat u korpu! 🛒`);
     setTimeout(() => setToast(null), 2800);
   };
 
+  const toggleWish = (product) => {
+    setWishlist(w => w.includes(product.id) ? w.filter(x => x !== product.id) : [...w, product.id]);
+  };
+
+  const onCollectionPage = route.name === "worldcup" || route.name === "product";
+
   return (
     <div style={{ background: "#05050e", minHeight: "100vh", fontFamily: "'Outfit', sans-serif", color: "#fff" }}>
-      <Navbar cartCount={cartItems.length} wishCount={0} onCart={() => setCartOpen(true)} onSearch={() => setSearchOpen(true)} />
+      {/* Global promo banner — fixed above navbar on all pages */}
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 101 }}>
+        <PromoBanner />
+      </div>
 
-      {route === "worldcup" ? (
+      <Navbar cartCount={cartItems.length} wishCount={wishlist.length} onCart={() => setCartOpen(true)} onSearch={() => setSearchOpen(true)} />
+
+      {/* Spacer for fixed banner (navbar is also fixed and offset in its own component) */}
+      <div style={{ height: 39 }} />
+
+      {route.name === "worldcup" && (
         <div style={{ paddingTop: 68 }}>
-          <WorldCup onAddToCart={addToCart} />
+          <WorldCup onAddToCart={addToCart} onWish={toggleWish} wishlist={wishlist} />
         </div>
-      ) : (
+      )}
+
+      {route.name === "product" && (
+        <div style={{ paddingTop: 80 }}>
+          <ProductPage slug={route.slug} onAddToCart={addToCart} onWish={toggleWish} wishlist={wishlist} />
+        </div>
+      )}
+
+      {route.name === "coverage" && (
+        <div style={{ paddingTop: 80 }}>
+          <CoverageDashboard />
+        </div>
+      )}
+
+      {route.name === "home" && (
         <>
           <HeroSection />
           <WhyUsSection />
@@ -1038,7 +1098,7 @@ export default function DresZaKes() {
       <Footer />
 
       {/* Floating buy button */}
-      <a href={route === "worldcup" ? "#/world-cup" : "#products"} style={{
+      <a href={onCollectionPage ? "#/world-cup" : "#products"} style={{
         position: "fixed", bottom: 28, right: 28, zIndex: 90,
         background: "linear-gradient(135deg, #00dcff, #39ff14)",
         color: "#000", fontWeight: 900,

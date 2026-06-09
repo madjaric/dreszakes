@@ -91,3 +91,14 @@ img {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
+
+@keyframes modalIn {
+  from { transform: translateY(20px) scale(0.98); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* Responsive: stack modal & product page grids on mobile */
+@media (max-width: 720px) {
+  .qv-grid { grid-template-columns: 1fr !important; }
+  .pp-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
+}

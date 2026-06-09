@@ -5,6 +5,7 @@ import ProductImage from "./ProductImage.jsx";
 import SizeSelector from "./SizeSelector.jsx";
 import QuantitySelector from "./QuantitySelector.jsx";
 import PromoPerks from "./PromoPerks.jsx";
+import WhatsAppButton from "./WhatsAppButton.jsx";
 
 // Update document head for SEO (title + meta description).
 function useSeo(product) {
@@ -114,6 +115,11 @@ export default function ProductPage({ slug, onAddToCart, onWish, wishlist }) {
                 color: wished ? "#ff4d6d" : "#fff", fontSize: 22, cursor: "pointer"
               }}
             >{wished ? "♥" : "♡"}</button>
+          </div>
+
+          {/* WhatsApp order */}
+          <div style={{ marginBottom: 24 }}>
+            <WhatsAppButton product={product} size={size} qty={qty} full />
           </div>
 
           <PromoPerks />
