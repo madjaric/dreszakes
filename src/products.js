@@ -7,6 +7,7 @@
 // Drop real photos into public/jerseys/<country>/ and they appear with no code changes.
 
 import { WC_TEAMS, SIZES } from "./teams.js";
+import { KIT_IMAGES } from "./kitImages.js";
 
 export const FAN_PRICE = 4200;
 export const PLAYER_PRICE = 4500;
@@ -18,8 +19,14 @@ const VERSION_LABEL = { fan: "Fan Version", player: "Player Version" };
 const TYPE_LABEL_SR = { home: "Domaći", away: "Gostujući" };
 
 function imagePaths(teamId, type) {
-  // 3 image slots per kit: front, back, detail.
+  // Primary: the real uploaded jersey image (if it exists in KIT_IMAGES).
+  // The remaining slots reference optional extra photos under /jerseys/<id>/
+  // and gracefully fall back to the SVG placeholder via <ProductImage>.
+  const real = KIT_IMAGES[teamId] && KIT_IMAGES[teamId][type];
   const base = `/jerseys/${teamId}`;
+  if (real) {
+    return [real, `${base}/${type}-2.jpg`, `${base}/${type}-3.jpg`];
+  }
   return [
     `${base}/${type}-1.jpg`,
     `${base}/${type}-2.jpg`,
