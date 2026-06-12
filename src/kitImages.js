@@ -1,13 +1,17 @@
-// AUTO-GENERATED from uploaded FIFA WC2026 jersey images.
+// AUTO-GENERATED from uploaded WC2026 jersey images.
 // Maps teamId -> available kit images under /images/kits/.
 // Only includes images that actually exist on disk.
 export const KIT_IMAGES = {
   "alzir": { home: "/images/kits/alzir-home.jpg" },
   "argentina": { home: "/images/kits/argentina-home.jpg", away: "/images/kits/argentina-away.jpg" },
+  "australija": { home: "/images/kits/australija-home.jpg", away: "/images/kits/australija-away.jpg" },
   "austrija": { home: "/images/kits/austrija-home.jpg" },
   "belgija": { home: "/images/kits/belgija-home.jpg", away: "/images/kits/belgija-away.jpg" },
+  "bosna": { home: "/images/kits/bosna-home.jpg", away: "/images/kits/bosna-away.jpg" },
   "brazil": { home: "/images/kits/brazil-home.jpg", away: "/images/kits/brazil-away.jpg" },
   "ceska": { home: "/images/kits/ceska-home.jpg" },
+  "egipat": { home: "/images/kits/egipat-home.jpg", away: "/images/kits/egipat-away.jpg" },
+  "ekvador": { home: "/images/kits/ekvador-home.jpg", away: "/images/kits/ekvador-away.jpg" },
   "engleska": { home: "/images/kits/engleska-home.jpg", away: "/images/kits/engleska-away.jpg" },
   "france": { home: "/images/kits/france-home.jpg", away: "/images/kits/france-away.jpg" },
   "gana": { home: "/images/kits/gana-home.jpg" },
@@ -17,11 +21,12 @@ export const KIT_IMAGES = {
   "juznaafrika": { home: "/images/kits/juznaafrika-home.jpg", away: "/images/kits/juznaafrika-away.jpg" },
   "juznakoreja": { home: "/images/kits/juznakoreja-home.jpg" },
   "kanada": { home: "/images/kits/kanada-home.jpg", away: "/images/kits/kanada-away.jpg" },
-  "katar": { away: "/images/kits/katar-away.jpg" },
+  "katar": { home: "/images/kits/katar-home.jpg", away: "/images/kits/katar-away.jpg" },
   "kolumbija": { home: "/images/kits/kolumbija-home.jpg", away: "/images/kits/kolumbija-away.jpg" },
   "maroko": { home: "/images/kits/maroko-home.jpg" },
   "meksiko": { home: "/images/kits/meksiko-home.jpg", away: "/images/kits/meksiko-away.jpg" },
   "nemacka": { home: "/images/kits/nemacka-home.jpg", away: "/images/kits/nemacka-away.jpg" },
+  "norveska": { home: "/images/kits/norveska-home.jpg", away: "/images/kits/norveska-away.jpg" },
   "novizeland": { home: "/images/kits/novizeland-home.jpg" },
   "obala": { home: "/images/kits/obala-home.jpg" },
   "paragvaj": { home: "/images/kits/paragvaj-home.jpg" },
