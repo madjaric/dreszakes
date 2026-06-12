@@ -168,7 +168,7 @@ export default function QuickViewModal({ team, onClose, onAddToCart, initialVers
               <WhatsAppButton product={product} size={size} qty={qty} personalization={{ enabled: personalize, name: pName.trim(), number: pNumber.trim() }} full />
             </div>
 
-            {/* Promo info — isti blok kao na Product Page (bez duplikata, bez pouzeća) */}
+            {/* Promo info — isti blok kao na Product Page (samo dostava + Mystery) */}
             <PromoPerks compact />
 
             <a
