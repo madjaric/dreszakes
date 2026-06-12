@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import ProductGallery from "./ProductGallery.jsx";
+import ProductImage from "./ProductImage.jsx";
 import SizeSelector from "./SizeSelector.jsx";
 import QuantitySelector from "./QuantitySelector.jsx";
 import PromoPerks from "./PromoPerks.jsx";
@@ -67,7 +67,15 @@ export default function QuickViewModal({ team, onClose, onAddToCart, initialVers
         >✕</button>
 
         <div className="qv-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28, padding: 28 }}>
-          <ProductGallery product={product} height={380} />
+          {/* Jedna velika slika koja se menja na osnovu izabranog tipa (domaći/gostujući) */}
+          <div style={{
+            aspectRatio: "1 / 1", borderRadius: 16, overflow: "hidden", alignSelf: "start",
+            border: "1px solid rgba(255,255,255,0.08)",
+            background: "radial-gradient(circle at 50% 42%, rgba(0,220,255,0.08), rgba(0,0,0,0) 66%), linear-gradient(180deg, #0b1018, #080b12)",
+            padding: 20,
+          }}>
+            <ProductImage src={product.images[0]} alt={`${team.team} ${product.typeLabel} dres 2026`} colors={product.colors} version={product.version} />
+          </div>
 
           <div style={{ display: "flex", flexDirection: "column" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
@@ -160,12 +168,7 @@ export default function QuickViewModal({ team, onClose, onAddToCart, initialVers
               <WhatsAppButton product={product} size={size} qty={qty} personalization={{ enabled: personalize, name: pName.trim(), number: pNumber.trim() }} full />
             </div>
 
-            {/* Promo strip */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
-              <span style={promoPill("#00dcff")}>🚚 Besplatna dostava na sve porudžbine</span>
-              <span style={promoPill("#39ff14")}>🎁 Kupi 4 dresa i dobijaš Mystery Dres GRATIS</span>
-            </div>
-
+            {/* Promo info — isti blok kao na Product Page (bez duplikata, bez pouzeća) */}
             <PromoPerks compact />
 
             <a
@@ -183,14 +186,6 @@ export default function QuickViewModal({ team, onClose, onAddToCart, initialVers
 }
 
 const selLabel = { fontSize: 12, color: "rgba(255,255,255,0.5)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8, fontWeight: 600 };
-
-function promoPill(color) {
-  return {
-    display: "inline-flex", alignItems: "center", gap: 8,
-    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: 10, padding: "9px 12px", fontSize: 12.5, fontWeight: 700, color,
-  };
-}
 
 function Toggle({ active, onClick, accent, children }) {
   return (
