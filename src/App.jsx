@@ -25,7 +25,7 @@ const PRODUCTS = [
     badge: "NAJPOPULARNIJE",
     badgeColor: "bg-purple-500",
     img: "mystery",
-    href: "#/world-cup?v=mystery",
+    addToCart: true, // Mystery je stvaran proizvod — ide direktno u korpu
   },
   {
     id: 2,
@@ -371,7 +371,14 @@ function WhyUsSection() {
   );
 }
 
-function ProductsSection() {
+function ProductsSection({ onAddToCart }) {
+  const handleClick = (p) => {
+    if (p.addToCart) {
+      onAddToCart(p);
+    } else {
+      window.location.assign(p.href);
+    }
+  };
   return (
     <section id="products" style={{ padding: "80px 1.5rem", maxWidth: 1200, margin: "0 auto" }}>
       <div style={{ textAlign: "center", marginBottom: 56 }}>
@@ -384,7 +391,7 @@ function ProductsSection() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
         {PRODUCTS.map((p) => (
-          <div key={p.id} onClick={() => { window.location.hash = p.href.slice(1); }} style={{
+          <div key={p.id} onClick={() => handleClick(p)} style={{
             background: "rgba(255,255,255,0.03)",
             border: "1px solid rgba(255,255,255,0.08)",
             borderRadius: 20, overflow: "hidden",
@@ -482,16 +489,16 @@ function ProductsSection() {
                   <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 30, color: p.accent, letterSpacing: 1 }}>{p.price}</span>
                   <span style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", marginLeft: 4 }}>RSD</span>
                 </div>
-                <a href={p.href} style={{
+                <button onClick={(e) => { e.stopPropagation(); handleClick(p); }} style={{
                   background: `linear-gradient(135deg, ${p.accent}, ${p.accent}aa)`,
                   color: "#000", border: "none", borderRadius: 10,
                   padding: "10px 20px", fontWeight: 800, fontSize: 13,
                   cursor: "pointer", transition: "all 0.2s",
-                  letterSpacing: 0.5, textDecoration: "none", display: "inline-block"
+                  letterSpacing: 0.5, display: "inline-block"
                 }}
                   onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.05)"; }}
                   onMouseLeave={e => { e.currentTarget.style.transform = "none"; }}
-                >Pogledaj →</a>
+                >{p.addToCart ? "Dodaj u korpu 🛒" : "Pogledaj →"}</button>
               </div>
             </div>
           </div>
@@ -584,7 +591,7 @@ function ComparisonSection() {
 
 const MYSTERY_ITEMS = ["Real Madrid", "Barcelona", "Argentina", "Brazil", "PSG", "Man United"];
 
-function MysterySection() {
+function MysterySection({ onAddToCart }) {
   const [revealed, setRevealed] = useState(false);
   const items = MYSTERY_ITEMS;
   const [current, setCurrent] = useState(0);
@@ -666,13 +673,13 @@ function MysterySection() {
           </div>
 
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="#/world-cup?v=mystery" style={{
+            <button onClick={() => onAddToCart(PRODUCTS[0])} style={{
               background: "linear-gradient(135deg, #a855f7, #ec4899)",
               color: "#fff", border: "none", borderRadius: 12,
               padding: "14px 32px", fontWeight: 800, fontSize: 14,
-              cursor: "pointer", transition: "all 0.2s", textDecoration: "none",
+              cursor: "pointer", transition: "all 0.2s",
               fontFamily: "'Bebas Neue', sans-serif", letterSpacing: 2
-            }}>🎁 Pogledaj Mystery Dres</a>
+            }}>🎁 Naruči Mystery Dres</button>
             <button onClick={() => setRevealed(!revealed)} style={{
               background: "rgba(168,85,247,0.1)",
               border: "1px solid rgba(168,85,247,0.3)",
@@ -999,9 +1006,9 @@ export default function DresZaKes() {
         <>
           <HeroSection />
           <WhyUsSection />
-          <ProductsSection />
+          <ProductsSection onAddToCart={addToCart} />
           <ComparisonSection />
-          <MysterySection />
+          <MysterySection onAddToCart={addToCart} />
           <TestimonialsSection />
           <FAQSection />
         </>

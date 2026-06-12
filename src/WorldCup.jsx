@@ -115,13 +115,12 @@ const fLabel = { fontSize: 12, color: "rgba(255,255,255,0.5)", letterSpacing: 1.
 function getVersionFilter() {
   if (typeof window === "undefined") return null;
   const m = window.location.hash.match(/[?&]v=([a-z]+)/);
-  return m && ["fan", "player", "mystery"].includes(m[1]) ? m[1] : null;
+  return m && ["fan", "player"].includes(m[1]) ? m[1] : null;
 }
 
 const VERSION_LABEL = {
   fan: "Fan verzija · 4.200 RSD",
   player: "Player verzija · 4.500 RSD",
-  mystery: "Mystery Dres · iznenađenje",
 };
 
 export default function WorldCup({ onAddToCart, cartCount = 0 }) {
@@ -211,12 +210,12 @@ export default function WorldCup({ onAddToCart, cartCount = 0 }) {
         {versionFilter && (
           <div style={{
             display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
-            background: versionFilter === "player" ? "rgba(74,222,128,0.1)" : versionFilter === "mystery" ? "rgba(168,85,247,0.12)" : "rgba(34,211,238,0.1)",
-            border: `1px solid ${versionFilter === "player" ? "rgba(74,222,128,0.3)" : versionFilter === "mystery" ? "rgba(168,85,247,0.35)" : "rgba(34,211,238,0.3)"}`,
+            background: versionFilter === "player" ? "rgba(74,222,128,0.1)" : "rgba(34,211,238,0.1)",
+            border: `1px solid ${versionFilter === "player" ? "rgba(74,222,128,0.3)" : "rgba(34,211,238,0.3)"}`,
             borderRadius: 12, padding: "12px 16px", marginBottom: 18, flexWrap: "wrap",
           }}>
             <div style={{ fontSize: 14, color: "#fff", fontWeight: 600 }}>
-              {versionFilter === "mystery" ? "🎁" : versionFilter === "player" ? "⭐" : "👕"} Prikazana verzija: <strong>{VERSION_LABEL[versionFilter]}</strong>
+              {versionFilter === "player" ? "⭐" : "👕"} Prikazana verzija: <strong>{VERSION_LABEL[versionFilter]}</strong>
               <span style={{ color: "rgba(255,255,255,0.5)", fontWeight: 400 }}> — izaberi reprezentaciju, verzija je već selektovana</span>
             </div>
             <a href="#/world-cup" style={{
