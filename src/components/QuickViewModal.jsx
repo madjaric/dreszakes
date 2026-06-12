@@ -7,16 +7,23 @@ import WhatsAppButton from "./WhatsAppButton.jsx";
 import { getVariant } from "../products.js";
 
 // `team` is a TEAM_CARDS entry. The modal lets the user pick kit type + version,
-// then resolves to the concrete product variant for cart / wishlist / WhatsApp.
-export default function QuickViewModal({ team, onClose, onAddToCart, onWish, wishlist }) {
+// then resolves to the concrete product variant for cart / WhatsApp.
+export default function QuickViewModal({ team, onClose, onAddToCart, initialVersion = "fan" }) {
   const [type, setType] = useState("home"); // home | away
-  const [version, setVersion] = useState("fan"); // fan | player
+  const [version, setVersion] = useState(initialVersion === "player" ? "player" : "fan"); // fan | player
   const [size, setSize] = useState("M");
   const [qty, setQty] = useState(1);
+  const [personalize, setPersonalize] = useState(false);
+  const [pName, setPName] = useState("");
+  const [pNumber, setPNumber] = useState("");
 
   const product = useMemo(() => getVariant(team.teamId, type, version), [team, type, version]);
   const accent = version === "player" ? "#4ade80" : "#22d3ee";
-  const wished = product ? wishlist.includes(product.id) : false;
+
+  const buildItem = () => ({
+    ...product, size, qty,
+    personalization: { enabled: personalize, name: pName.trim(), number: pNumber.trim() },
+  });
 
   useEffect(() => {
     const onKey = (e) => e.key === "Escape" && onClose();
@@ -107,13 +114,39 @@ export default function QuickViewModal({ team, onClose, onAddToCart, onWish, wis
             <div style={{ marginBottom: 18 }}>
               <SizeSelector sizes={product.sizes} value={size} onChange={setSize} accent={accent} />
             </div>
-            <div style={{ marginBottom: 22 }}>
+            <div style={{ marginBottom: 18 }}>
               <QuantitySelector value={qty} onChange={setQty} accent={accent} />
+            </div>
+
+            {/* Personalizacija */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>Personalizacija dresa</div>
+              <div style={{ display: "flex", gap: 8, marginBottom: personalize ? 12 : 0 }}>
+                <button onClick={() => setPersonalize(false)} style={pOpt(!personalize, accent)}>Bez imena i broja</button>
+                <button onClick={() => setPersonalize(true)} style={pOpt(personalize, accent)}>Sa imenom i brojem</button>
+              </div>
+              {personalize && (
+                <div style={{ display: "flex", gap: 10 }}>
+                  <input
+                    value={pName}
+                    onChange={(e) => setPName(e.target.value)}
+                    placeholder="Ime"
+                    style={{ flex: 2, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 10, padding: "11px 12px", color: "#fff", fontSize: 14, outline: "none" }}
+                  />
+                  <input
+                    value={pNumber}
+                    onChange={(e) => setPNumber(e.target.value.replace(/\D/g, "").slice(0, 2))}
+                    placeholder="Broj"
+                    inputMode="numeric"
+                    style={{ flex: 1, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 10, padding: "11px 12px", color: "#fff", fontSize: 14, outline: "none" }}
+                  />
+                </div>
+              )}
             </div>
 
             <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
               <button
-                onClick={() => onAddToCart({ ...product, size, qty })}
+                onClick={() => onAddToCart(buildItem())}
                 style={{
                   flex: 1, background: `linear-gradient(135deg, ${accent}, ${accent}bb)`,
                   color: "#000", border: "none", borderRadius: 12, padding: "15px",
@@ -121,19 +154,10 @@ export default function QuickViewModal({ team, onClose, onAddToCart, onWish, wis
                   fontFamily: "'Bebas Neue', sans-serif", letterSpacing: 2,
                 }}
               >🛒 DODAJ U KORPU</button>
-              <button
-                onClick={() => onWish(product)} aria-label="Lista želja"
-                style={{
-                  width: 52, borderRadius: 12,
-                  background: wished ? "rgba(255,77,109,0.15)" : "rgba(255,255,255,0.05)",
-                  border: `1px solid ${wished ? "#ff4d6d55" : "rgba(255,255,255,0.12)"}`,
-                  color: wished ? "#ff4d6d" : "#fff", fontSize: 20, cursor: "pointer",
-                }}
-              >{wished ? "♥" : "♡"}</button>
             </div>
 
             <div style={{ marginBottom: 18 }}>
-              <WhatsAppButton product={product} size={size} qty={qty} full />
+              <WhatsAppButton product={product} size={size} qty={qty} personalization={{ enabled: personalize, name: pName.trim(), number: pNumber.trim() }} full />
             </div>
 
             {/* Promo strip */}
@@ -181,4 +205,14 @@ function Toggle({ active, onClick, accent, children }) {
       }}
     >{children}</button>
   );
+}
+
+function pOpt(active, accent) {
+  return {
+    flex: 1, padding: "10px 12px", borderRadius: 10,
+    background: active ? accent : "rgba(255,255,255,0.05)",
+    color: active ? "#000" : "rgba(255,255,255,0.7)",
+    border: active ? "none" : "1px solid rgba(255,255,255,0.12)",
+    fontWeight: 700, fontSize: 13, cursor: "pointer", transition: "all 0.15s",
+  };
 }

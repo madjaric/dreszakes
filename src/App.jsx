@@ -1,13 +1,14 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import WorldCup from "./WorldCup.jsx";
 import ProductPage from "./components/ProductPage.jsx";
 import CoverageDashboard from "./components/CoverageDashboard.jsx";
+import CheckoutPage from "./components/CheckoutPage.jsx";
+import { whatsappUrl } from "./config.js";
 
 const NAV_LINKS = [
   { label: "Početna", href: "#/" },
   { label: "Proizvodi", href: "#products" },
   { label: "SP 2026 🏆", href: "#/world-cup" },
-  { label: "Kolekcija", href: "#gallery" },
   { label: "FAQ", href: "#faq" },
 ];
 
@@ -24,6 +25,7 @@ const PRODUCTS = [
     badge: "NAJPOPULARNIJE",
     badgeColor: "bg-purple-500",
     img: "mystery",
+    href: "#/world-cup?v=mystery",
   },
   {
     id: 2,
@@ -37,6 +39,7 @@ const PRODUCTS = [
     badge: "BESTSELLER",
     badgeColor: "bg-blue-500",
     img: "fan",
+    href: "#/world-cup?v=fan",
   },
   {
     id: 3,
@@ -50,30 +53,22 @@ const PRODUCTS = [
     badge: "PREMIUM",
     badgeColor: "bg-green-500",
     img: "player",
+    href: "#/world-cup?v=player",
   },
 ];
 
 const TESTIMONIALS = [
-  { name: "Nikola M.", city: "Beograd", text: "Top kvalitet, stigao za 2 dana. Definitivno kupujem opet!", stars: 5 },
+  { name: "Nikola M.", city: "Beograd", text: "Top kvalitet, sve preporuke. Definitivno kupujem opet!", stars: 5 },
   { name: "Marko P.", city: "Novi Sad", text: "Player verzija brutalna. Tačno kao na terenu, prelepo sedi.", stars: 5 },
   { name: "Stefan R.", city: "Niš", text: "Za ove pare predobro. Mystery dres bio Real Madrid, presrećan sam!", stars: 5 },
-  { name: "Aleksandar V.", city: "Kragujevac", text: "Brza dostava, pakovanje premium, materijal odličan. 10/10", stars: 5 },
+  { name: "Aleksandar V.", city: "Kragujevac", text: "Odličan kvalitet i komunikacija tokom porudžbine. 10/10", stars: 5 },
 ];
 
 const FAQS = [
-  { q: "Da li je moguće plaćanje pouzećem?", a: "Da! Plaćanje pouzećem je dostupno za sve porudžbine širom Srbije. Plaćate kuriru pri preuzimanju." },
-  { q: "Koliko traje dostava?", a: "Dostava traje 1–3 radna dana. Ekspresna dostava (1 dan) dostupna je za Beograd i okolinu." },
+  { q: "Kako mogu da poručim?", a: "Izaberite dres, veličinu i opcije, dodajte u korpu i nastavite na naručivanje. Porudžbinu potvrđujete putem WhatsApp-a." },
+  { q: "Koliko traje dostava?", a: "Dostava traje 10-14 radnih dana širom Srbije." },
   { q: "Koja je razlika između Fan i Player verzije?", a: "Fan verzija ima regularni kroj i standardni materijal — savršena za svakodnevno nošenje. Player verzija ima atletski slim fit i premium lagani materijal identičan onome koji koriste profesionalni igrači." },
   { q: "Da li mogu da biram veličinu?", a: "Naravno! Veličine XS, S, M, L, XL i XXL su dostupne za sve modele. Samo napišite željenu veličinu u napomeni pri narudžbini." },
-];
-
-const GALLERY = [
-  { team: "Real Madrid", color: "from-white/20 to-white/5", emoji: "⚪", country: "🇪🇸" },
-  { team: "Barcelona", color: "from-blue-600/30 to-red-600/20", emoji: "🔵", country: "🇪🇸" },
-  { team: "Brazil", color: "from-yellow-400/30 to-green-500/20", emoji: "🟡", country: "🇧🇷" },
-  { team: "Argentina", color: "from-blue-400/30 to-sky-300/20", emoji: "🔵", country: "🇦🇷" },
-  { team: "PSG", color: "from-blue-900/40 to-red-500/20", emoji: "🔵", country: "🇫🇷" },
-  { team: "Man United", color: "from-red-600/30 to-red-900/20", emoji: "🔴", country: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
 ];
 
 function StarRating({ count }) {
@@ -86,7 +81,7 @@ function StarRating({ count }) {
   );
 }
 
-function Navbar({ cartCount, wishCount, onCart, onSearch }) {
+function Navbar({ cartCount, onCart }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -140,11 +135,6 @@ function Navbar({ cartCount, wishCount, onCart, onSearch }) {
 
         {/* Icons */}
         <div style={{ display: "flex", gap: 12, alignItems: "center", marginLeft: "auto" }}>
-          <button onClick={onSearch} style={iconBtn}>🔍</button>
-          <button style={{ ...iconBtn, position: "relative" }} onClick={() => {}}>
-            ♡
-            {wishCount > 0 && <span style={badge}>{wishCount}</span>}
-          </button>
           <button style={{ ...iconBtn, position: "relative" }} onClick={onCart}>
             🛒
             {cartCount > 0 && <span style={{ ...badge, background: "#00dcff", color: "#000" }}>{cartCount}</span>}
@@ -277,7 +267,7 @@ function HeroSection() {
           <a href="#products" style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             background: "linear-gradient(135deg, #00dcff, #0099cc)",
-            color: "#000", fontWeight: 800, fontSize: 14, letterSpacing: 1.5,
+            color: "#000", fontWeight: 800, fontSize: 14,
             textTransform: "uppercase", padding: "14px 32px", borderRadius: 12,
             textDecoration: "none", boxShadow: "0 0 30px rgba(0,220,255,0.4)",
             transition: "all 0.3s", fontFamily: "'Bebas Neue', sans-serif", letterSpacing: 2
@@ -319,7 +309,7 @@ function HeroSection() {
           display: "flex", gap: 32, justifyContent: "center", marginTop: 56,
           flexWrap: "wrap"
         }}>
-          {[["500+", "Zadovoljnih kupaca"], ["3", "Verzije dresova"], ["1–3", "Dana dostava"]].map(([val, label]) => (
+          {[["500+", "Zadovoljnih kupaca"], ["2", "Verzije dresova"], ["10-14", "Dana dostava"]].map(([val, label]) => (
             <div key={label} style={{ textAlign: "center" }}>
               <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 36, color: "#00dcff", lineHeight: 1 }}>{val}</div>
               <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", letterSpacing: 1, textTransform: "uppercase", marginTop: 4 }}>{label}</div>
@@ -334,8 +324,8 @@ function HeroSection() {
 function WhyUsSection() {
   const features = [
     { icon: "⚡", title: "Premium kvalitet", desc: "Svaki dres prolazi strogi QC pre slanja. Samo top materijali." },
-    { icon: "🚚", title: "Brza dostava", desc: "1–3 radna dana širom Srbije. Ekspres dostava za Beograd." },
-    { icon: "💰", title: "Plaćanje pouzećem", desc: "Plati kuriru pri preuzimanju. Nula rizika za tebe." },
+    { icon: "🚚", title: "Dostava 10-14 radnih dana", desc: "Dostava širom Srbije za 10-14 radnih dana." },
+    { icon: "🔒", title: "Sigurna kupovina", desc: "Tvoji podaci su zaštićeni i bezbedni." },
     { icon: "🔥", title: "Najtraženiji modeli", desc: "Real Madrid, Barcelona, Argentina, Brazil i mnogi drugi." },
     { icon: "⭐", title: "Zadovoljni kupci", desc: "500+ zadovoljnih kupaca. Provjeri recenzije!" },
   ];
@@ -381,7 +371,7 @@ function WhyUsSection() {
   );
 }
 
-function ProductsSection({ onAddToCart }) {
+function ProductsSection() {
   return (
     <section id="products" style={{ padding: "80px 1.5rem", maxWidth: 1200, margin: "0 auto" }}>
       <div style={{ textAlign: "center", marginBottom: 56 }}>
@@ -394,7 +384,7 @@ function ProductsSection({ onAddToCart }) {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
         {PRODUCTS.map((p) => (
-          <div key={p.id} style={{
+          <div key={p.id} onClick={() => { window.location.hash = p.href.slice(1); }} style={{
             background: "rgba(255,255,255,0.03)",
             border: "1px solid rgba(255,255,255,0.08)",
             borderRadius: 20, overflow: "hidden",
@@ -475,7 +465,6 @@ function ProductsSection({ onAddToCart }) {
               {/* Tag */}
               <div style={{
                 position: "absolute", bottom: 14, left: 14,
-                background: `linear-gradient(90deg, ${p.tagColor.replace("from-", "").replace("to-", "")})`,
                 background: `rgba(0,0,0,0.6)`,
                 border: `1px solid ${p.accent}40`,
                 borderRadius: 6, padding: "4px 10px",
@@ -493,16 +482,16 @@ function ProductsSection({ onAddToCart }) {
                   <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 30, color: p.accent, letterSpacing: 1 }}>{p.price}</span>
                   <span style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", marginLeft: 4 }}>RSD</span>
                 </div>
-                <button onClick={() => onAddToCart(p)} style={{
+                <a href={p.href} style={{
                   background: `linear-gradient(135deg, ${p.accent}, ${p.accent}aa)`,
                   color: "#000", border: "none", borderRadius: 10,
                   padding: "10px 20px", fontWeight: 800, fontSize: 13,
                   cursor: "pointer", transition: "all 0.2s",
-                  letterSpacing: 0.5
+                  letterSpacing: 0.5, textDecoration: "none", display: "inline-block"
                 }}
                   onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.05)"; }}
                   onMouseLeave={e => { e.currentTarget.style.transform = "none"; }}
-                >Naruči →</button>
+                >Pogledaj →</a>
               </div>
             </div>
           </div>
@@ -514,7 +503,7 @@ function ProductsSection({ onAddToCart }) {
         display: "flex", gap: 24, justifyContent: "center", marginTop: 48,
         flexWrap: "wrap"
       }}>
-        {["🔒 Sigurna kupovina", "🚚 Besplatna dostava na 2+", "💰 Pouzećem", "↩️ Povrat novca"].map(t => (
+        {["🔒 Sigurna kupovina", "🚚 Besplatna dostava"].map(t => (
           <div key={t} style={{
             fontSize: 13, color: "rgba(255,255,255,0.5)",
             background: "rgba(255,255,255,0.04)",
@@ -593,9 +582,11 @@ function ComparisonSection() {
   );
 }
 
-function MysterySection({ onAddToCart }) {
+const MYSTERY_ITEMS = ["Real Madrid", "Barcelona", "Argentina", "Brazil", "PSG", "Man United"];
+
+function MysterySection() {
   const [revealed, setRevealed] = useState(false);
-  const items = ["Real Madrid", "Barcelona", "Argentina", "Brazil", "PSG", "Man United"];
+  const items = MYSTERY_ITEMS;
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
@@ -603,7 +594,7 @@ function MysterySection({ onAddToCart }) {
       const id = setInterval(() => setCurrent(c => (c + 1) % items.length), 600);
       return () => clearInterval(id);
     }
-  }, [revealed]);
+  }, [revealed, items.length]);
 
   return (
     <section style={{
@@ -675,13 +666,13 @@ function MysterySection({ onAddToCart }) {
           </div>
 
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <button onClick={() => onAddToCart(PRODUCTS[0])} style={{
+            <a href="#/world-cup?v=mystery" style={{
               background: "linear-gradient(135deg, #a855f7, #ec4899)",
               color: "#fff", border: "none", borderRadius: 12,
               padding: "14px 32px", fontWeight: 800, fontSize: 14,
-              cursor: "pointer", transition: "all 0.2s",
+              cursor: "pointer", transition: "all 0.2s", textDecoration: "none",
               fontFamily: "'Bebas Neue', sans-serif", letterSpacing: 2
-            }}>🎁 Naruči Mystery Dres</button>
+            }}>🎁 Pogledaj Mystery Dres</a>
             <button onClick={() => setRevealed(!revealed)} style={{
               background: "rgba(168,85,247,0.1)",
               border: "1px solid rgba(168,85,247,0.3)",
@@ -691,64 +682,6 @@ function MysterySection({ onAddToCart }) {
             }}>{revealed ? "Sakrij" : "Otkrij moguće dresove"}</button>
           </div>
         </div>
-      </div>
-    </section>
-  );
-}
-
-function GallerySection() {
-  return (
-    <section id="gallery" style={{ padding: "80px 1.5rem", maxWidth: 1200, margin: "0 auto" }}>
-      <div style={{ textAlign: "center", marginBottom: 52 }}>
-        <p style={{ color: "#00dcff", fontSize: 12, fontWeight: 700, letterSpacing: 3, textTransform: "uppercase", marginBottom: 12 }}>Kolekcija</p>
-        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(2.2rem, 5vw, 3.8rem)", color: "#fff", lineHeight: 1 }}>
-          TIMOVI U<br />
-          <span style={{ background: "linear-gradient(90deg,#00dcff,#39ff14)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>KOLEKCIJI</span>
-        </h2>
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 16 }}>
-        {GALLERY.map((g, i) => (
-          <div key={i} style={{
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.07)",
-            borderRadius: 16, padding: "32px 16px", textAlign: "center",
-            transition: "all 0.3s", cursor: "pointer"
-          }}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = "translateY(-6px) scale(1.02)";
-              e.currentTarget.style.border = "1px solid rgba(0,220,255,0.25)";
-              e.currentTarget.style.background = "rgba(0,220,255,0.05)";
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = "none";
-              e.currentTarget.style.border = "1px solid rgba(255,255,255,0.07)";
-              e.currentTarget.style.background = "rgba(255,255,255,0.03)";
-            }}
-          >
-            <div style={{ fontSize: 40, marginBottom: 12 }}>{g.country}</div>
-            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, color: "#fff", letterSpacing: 1, marginBottom: 4 }}>{g.team}</div>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", letterSpacing: 1 }}>Dostupno</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Instagram CTA */}
-      <div style={{ textAlign: "center", marginTop: 48 }}>
-        <a href="https://www.instagram.com/dreszakes/" target="_blank" rel="noopener noreferrer" style={{
-          display: "inline-flex", alignItems: "center", gap: 10,
-          background: "linear-gradient(135deg, rgba(131,58,180,0.2), rgba(253,29,29,0.15), rgba(252,176,69,0.15))",
-          border: "1px solid rgba(255,255,255,0.12)",
-          color: "#fff", textDecoration: "none",
-          padding: "14px 28px", borderRadius: 12,
-          fontSize: 14, fontWeight: 700, transition: "all 0.3s"
-        }}
-          onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"}
-          onMouseLeave={e => e.currentTarget.style.transform = "none"}
-        >
-          <span style={{ fontSize: 22 }}>📸</span>
-          Pratite nas na Instagramu @dreszakes
-        </a>
       </div>
     </section>
   );
@@ -850,14 +783,14 @@ function Footer() {
               DRES<span style={{ color: "#00dcff" }}>ZA</span>KES
             </div>
             <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, lineHeight: 1.6, maxWidth: 200 }}>
-              Najjači fudbalski dresovi u Srbiji. Premium kvalitet, brza dostava.
+              Najjači fudbalski dresovi u Srbiji. Premium kvalitet, dostava 10-14 radnih dana.
             </p>
           </div>
           <div>
             <div style={{ fontWeight: 700, color: "#fff", marginBottom: 14, fontSize: 12, letterSpacing: 1.5, textTransform: "uppercase" }}>Linkovi</div>
-            {["Početna", "Proizvodi", "Kolekcija", "FAQ"].map(l => (
+            {[["Početna", "#/"], ["Proizvodi", "#products"], ["SP 2026", "#/world-cup"], ["FAQ", "#faq"]].map(([l, href]) => (
               <div key={l} style={{ marginBottom: 10 }}>
-                <a href="#" style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, textDecoration: "none" }}
+                <a href={href} style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, textDecoration: "none" }}
                   onMouseEnter={e => e.target.style.color = "#00dcff"}
                   onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}
                 >{l}</a>
@@ -870,19 +803,22 @@ function Footer() {
               display: "flex", alignItems: "center", gap: 8, marginBottom: 10,
               color: "rgba(255,255,255,0.45)", textDecoration: "none", fontSize: 13
             }}>📸 Instagram @dreszakes</a>
-            <a href="#" style={{
+            <span style={{
               display: "flex", alignItems: "center", gap: 8, marginBottom: 10,
-              color: "rgba(255,255,255,0.45)", textDecoration: "none", fontSize: 13
-            }}>🎵 TikTok @dreszakes</a>
+              color: "rgba(255,255,255,0.45)", fontSize: 13
+            }}>🎵 TikTok @dreszakes</span>
           </div>
           <div>
             <div style={{ fontWeight: 700, color: "#fff", marginBottom: 14, fontSize: 12, letterSpacing: 1.5, textTransform: "uppercase" }}>Kontakt</div>
-            {["Politika privatnosti", "Uslovi korišćenja", "Kontakt"].map(l => (
+            <div style={{ marginBottom: 10 }}>
+              <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, textDecoration: "none" }}
+                onMouseEnter={e => e.target.style.color = "#00dcff"}
+                onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}
+              >💬 Kontakt putem WhatsApp-a</a>
+            </div>
+            {["Politika privatnosti", "Uslovi korišćenja"].map(l => (
               <div key={l} style={{ marginBottom: 10 }}>
-                <a href="#" style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, textDecoration: "none" }}
-                  onMouseEnter={e => e.target.style.color = "#00dcff"}
-                  onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}
-                >{l}</a>
+                <span style={{ color: "rgba(255,255,255,0.45)", fontSize: 13 }}>{l}</span>
               </div>
             ))}
           </div>
@@ -900,7 +836,7 @@ function Footer() {
 }
 
 // Cart modal
-function CartModal({ items, onClose }) {
+function CartModal({ items, onClose, onCheckout }) {
   const priceNum = (p) => typeof p === "number" ? p : parseInt(String(p).replace(/\./g, ""), 10) || 0;
   const total = items.reduce((s, i) => s + priceNum(i.price) * (i.qty || 1), 0);
   const totalQty = items.reduce((s, i) => s + (i.qty || 1), 0);
@@ -958,6 +894,11 @@ function CartModal({ items, onClose }) {
                     <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>
                       {(item.qty || 1)}x{item.size ? ` · ${item.size}` : ""}{item.versionLabel ? ` · ${item.versionLabel}` : ""}
                     </div>
+                    {item.personalization && item.personalization.enabled && (
+                      <div style={{ color: "#39ff14", fontSize: 11, marginTop: 2 }}>
+                        ✏️ {item.personalization.name || "-"} {item.personalization.number || ""}
+                      </div>
+                    )}
                   </div>
                   <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 20, color: "#00dcff" }}>{(priceNum(item.price) * (item.qty || 1)).toLocaleString("sr-RS")} RSD</div>
                 </div>
@@ -969,14 +910,14 @@ function CartModal({ items, onClose }) {
                 <span style={{ color: "rgba(255,255,255,0.5)" }}>Ukupno:</span>
                 <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 24, color: "#fff" }}>{total.toLocaleString("sr-RS")} RSD</span>
               </div>
-              <button style={{
+              <button onClick={onCheckout} style={{
                 width: "100%", background: "linear-gradient(135deg, #00dcff, #0099cc)",
                 color: "#000", border: "none", borderRadius: 12, padding: "15px",
                 fontWeight: 800, fontSize: 15, cursor: "pointer",
                 fontFamily: "'Bebas Neue', sans-serif", letterSpacing: 2
-              }}>NARUČI POUZEĆEM →</button>
+              }}>NASTAVI NA NARUČIVANJE →</button>
               <p style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", fontSize: 12, marginTop: 12 }}>
-                💰 Plaćanje pri preuzimanju · 🚚 Dostava 1–3 dana
+                🚚 Dostava 10-14 radnih dana · 🔒 Sigurna kupovina
               </p>
             </div>
           </>
@@ -986,51 +927,12 @@ function CartModal({ items, onClose }) {
   );
 }
 
-// Search modal
-function SearchModal({ onClose }) {
-  return (
-    <div style={{
-      position: "fixed", inset: 0, zIndex: 999,
-      background: "rgba(0,0,0,0.85)", backdropFilter: "blur(16px)",
-      display: "flex", alignItems: "flex-start", justifyContent: "center",
-      padding: "80px 1.5rem"
-    }} onClick={onClose}>
-      <div onClick={e => e.stopPropagation()} style={{ width: "100%", maxWidth: 560 }}>
-        <div style={{
-          display: "flex", gap: 12, alignItems: "center",
-          background: "rgba(255,255,255,0.05)",
-          border: "1px solid rgba(0,220,255,0.3)",
-          borderRadius: 14, padding: "14px 18px"
-        }}>
-          <span style={{ color: "#00dcff", fontSize: 20 }}>🔍</span>
-          <input autoFocus placeholder="Pretraži dresove..." style={{
-            background: "none", border: "none", outline: "none",
-            color: "#fff", fontSize: 16, flex: 1
-          }} />
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 18 }}>✕</button>
-        </div>
-        <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 8 }}>
-          {["Mystery Dres", "Fan Version", "Player Version", "Real Madrid", "Barcelona"].map(s => (
-            <div key={s} style={{
-              padding: "12px 16px", borderRadius: 10,
-              background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.6)",
-              cursor: "pointer", fontSize: 14,
-              transition: "all 0.2s"
-            }}
-              onMouseEnter={e => { e.currentTarget.style.background = "rgba(0,220,255,0.08)"; e.currentTarget.style.color = "#fff"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.color = "rgba(255,255,255,0.6)"; }}
-            >⚽ {s}</div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function parseRoute() {
   if (typeof window === "undefined") return { name: "home" };
   const hash = window.location.hash.replace(/^#/, "");
   if (hash === "/coverage") return { name: "coverage" };
+  if (hash === "/checkout") return { name: "checkout" };
   // #/world-cup/:slug
   const productMatch = hash.match(/^\/world-cup\/(.+)$/);
   if (productMatch) return { name: "product", slug: productMatch[1] };
@@ -1041,9 +943,7 @@ function parseRoute() {
 export default function DresZaKes() {
   const [cartItems, setCartItems] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [toast, setToast] = useState(null);
-  const [wishlist, setWishlist] = useState([]);
   const [route, setRoute] = useState(parseRoute());
 
   useEffect(() => {
@@ -1062,25 +962,30 @@ export default function DresZaKes() {
     setTimeout(() => setToast(null), 2800);
   };
 
-  const toggleWish = (product) => {
-    setWishlist(w => w.includes(product.id) ? w.filter(x => x !== product.id) : [...w, product.id]);
+  const goToCheckout = () => {
+    setCartOpen(false);
+    window.location.hash = "/checkout";
   };
-
-  const onCollectionPage = route.name === "worldcup" || route.name === "product";
 
   return (
     <div style={{ background: "#05050e", minHeight: "100vh", fontFamily: "'Outfit', sans-serif", color: "#fff" }}>
-      <Navbar cartCount={cartItems.length} wishCount={wishlist.length} onCart={() => setCartOpen(true)} onSearch={() => setSearchOpen(true)} />
+      <Navbar cartCount={cartItems.length} onCart={() => setCartOpen(true)} />
 
       {route.name === "worldcup" && (
         <div style={{ paddingTop: 68 }}>
-          <WorldCup onAddToCart={addToCart} onWish={toggleWish} wishlist={wishlist} />
+          <WorldCup onAddToCart={addToCart} cartCount={cartItems.length} />
         </div>
       )}
 
       {route.name === "product" && (
         <div style={{ paddingTop: 80 }}>
-          <ProductPage slug={route.slug} onAddToCart={addToCart} onWish={toggleWish} wishlist={wishlist} />
+          <ProductPage slug={route.slug} onAddToCart={addToCart} />
+        </div>
+      )}
+
+      {route.name === "checkout" && (
+        <div style={{ paddingTop: 80 }}>
+          <CheckoutPage items={cartItems} onClearCart={() => setCartItems([])} />
         </div>
       )}
 
@@ -1094,33 +999,14 @@ export default function DresZaKes() {
         <>
           <HeroSection />
           <WhyUsSection />
-          <ProductsSection onAddToCart={addToCart} />
+          <ProductsSection />
           <ComparisonSection />
-          <MysterySection onAddToCart={addToCart} />
-          <GallerySection />
+          <MysterySection />
           <TestimonialsSection />
           <FAQSection />
         </>
       )}
       <Footer />
-
-      {/* Floating buy button */}
-      <a href={onCollectionPage ? "#/world-cup" : "#products"} style={{
-        position: "fixed", bottom: 28, right: 28, zIndex: 90,
-        background: "linear-gradient(135deg, #00dcff, #39ff14)",
-        color: "#000", fontWeight: 900,
-        fontFamily: "'Bebas Neue', sans-serif",
-        fontSize: 15, letterSpacing: 2,
-        padding: "14px 22px", borderRadius: 100,
-        textDecoration: "none",
-        boxShadow: "0 4px 30px rgba(0,220,255,0.5)",
-        animation: "float 4s ease-in-out infinite",
-        display: "flex", alignItems: "center", gap: 8,
-        transition: "all 0.3s"
-      }}
-        onMouseEnter={e => e.currentTarget.style.boxShadow = "0 6px 50px rgba(0,220,255,0.7)"}
-        onMouseLeave={e => e.currentTarget.style.boxShadow = "0 4px 30px rgba(0,220,255,0.5)"}
-      >⚽ NARUČI</a>
 
       {/* Toast */}
       {toast && (
@@ -1135,8 +1021,7 @@ export default function DresZaKes() {
         </div>
       )}
 
-      {cartOpen && <CartModal items={cartItems} onClose={() => setCartOpen(false)} />}
-      {searchOpen && <SearchModal onClose={() => setSearchOpen(false)} />}
+      {cartOpen && <CartModal items={cartItems} onClose={() => setCartOpen(false)} onCheckout={goToCheckout} />}
     </div>
   );
 }

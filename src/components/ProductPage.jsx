@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { PRODUCTS_BY_SLUG, getRelated } from "../products.js";
-import ProductGallery from "./ProductGallery.jsx";
 import ProductImage from "./ProductImage.jsx";
 import SizeSelector from "./SizeSelector.jsx";
 import QuantitySelector from "./QuantitySelector.jsx";
@@ -30,10 +29,13 @@ function useSeo(product) {
   }, [product]);
 }
 
-export default function ProductPage({ slug, onAddToCart, onWish, wishlist }) {
+export default function ProductPage({ slug, onAddToCart }) {
   const product = PRODUCTS_BY_SLUG[slug];
   const [size, setSize] = useState("M");
   const [qty, setQty] = useState(1);
+  const [personalize, setPersonalize] = useState(false);
+  const [pName, setPName] = useState("");
+  const [pNumber, setPNumber] = useState("");
   useSeo(product);
 
   useEffect(() => { window.scrollTo(0, 0); }, [slug]);
@@ -50,7 +52,7 @@ export default function ProductPage({ slug, onAddToCart, onWish, wishlist }) {
 
   const accent = product.version === "player" ? "#4ade80" : "#22d3ee";
   const related = getRelated(slug, 4);
-  const wished = wishlist.includes(product.id);
+  const personalization = { enabled: personalize, name: pName.trim(), number: pNumber.trim() };
 
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 1.5rem 60px" }}>
@@ -64,8 +66,15 @@ export default function ProductPage({ slug, onAddToCart, onWish, wishlist }) {
       </div>
 
       <div className="pp-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40 }}>
-        {/* Gallery */}
-        <ProductGallery product={product} height={460} />
+        {/* Glavna slika proizvoda */}
+        <div style={{
+          aspectRatio: "1 / 1", borderRadius: 16, overflow: "hidden",
+          border: "1px solid rgba(255,255,255,0.08)",
+          background: "radial-gradient(circle at 50% 42%, rgba(0,220,255,0.08), rgba(0,0,0,0) 66%), linear-gradient(180deg, #0b1018, #080b12)",
+          padding: 24,
+        }}>
+          <ProductImage src={product.images[0]} alt={product.title} colors={product.colors} version={product.version} />
+        </div>
 
         {/* Info */}
         <div>
@@ -91,13 +100,36 @@ export default function ProductPage({ slug, onAddToCart, onWish, wishlist }) {
           <div style={{ marginBottom: 20 }}>
             <SizeSelector sizes={product.sizes} value={size} onChange={setSize} accent={accent} />
           </div>
-          <div style={{ marginBottom: 26 }}>
+          <div style={{ marginBottom: 20 }}>
             <QuantitySelector value={qty} onChange={setQty} accent={accent} />
+          </div>
+
+          {/* Personalizacija */}
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>Personalizacija dresa</div>
+            <div style={{ display: "flex", gap: 8, marginBottom: personalize ? 12 : 0 }}>
+              <button onClick={() => setPersonalize(false)} style={ppOpt(!personalize, accent)}>Bez imena i broja</button>
+              <button onClick={() => setPersonalize(true)} style={ppOpt(personalize, accent)}>Sa imenom i brojem</button>
+            </div>
+            {personalize && (
+              <div style={{ display: "flex", gap: 10 }}>
+                <div style={{ flex: 2 }}>
+                  <label style={{ display: "block", fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 5 }}>Ime</label>
+                  <input value={pName} onChange={(e) => setPName(e.target.value)} placeholder="Npr. MESSI"
+                    style={ppInput} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: "block", fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 5 }}>Broj</label>
+                  <input value={pNumber} onChange={(e) => setPNumber(e.target.value.replace(/\D/g, "").slice(0, 2))} placeholder="10" inputMode="numeric"
+                    style={ppInput} />
+                </div>
+              </div>
+            )}
           </div>
 
           <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
             <button
-              onClick={() => onAddToCart({ ...product, size, qty })}
+              onClick={() => onAddToCart({ ...product, size, qty, personalization })}
               style={{
                 flex: 1, background: `linear-gradient(135deg, ${accent}, ${accent}bb)`,
                 color: "#000", border: "none", borderRadius: 12, padding: "16px",
@@ -105,21 +137,11 @@ export default function ProductPage({ slug, onAddToCart, onWish, wishlist }) {
                 fontFamily: "'Bebas Neue', sans-serif", letterSpacing: 2
               }}
             >🛒 DODAJ U KORPU</button>
-            <button
-              onClick={() => onWish(product)}
-              aria-label="Lista želja"
-              style={{
-                width: 56, borderRadius: 12,
-                background: wished ? "rgba(255,77,109,0.15)" : "rgba(255,255,255,0.05)",
-                border: `1px solid ${wished ? "#ff4d6d55" : "rgba(255,255,255,0.12)"}`,
-                color: wished ? "#ff4d6d" : "#fff", fontSize: 22, cursor: "pointer"
-              }}
-            >{wished ? "♥" : "♡"}</button>
           </div>
 
           {/* WhatsApp order */}
           <div style={{ marginBottom: 24 }}>
-            <WhatsAppButton product={product} size={size} qty={qty} full />
+            <WhatsAppButton product={product} size={size} qty={qty} personalization={personalization} full />
           </div>
 
           <PromoPerks />
@@ -178,4 +200,20 @@ const badge = {
   fontSize: 12,
   fontWeight: 700,
   letterSpacing: 0.5,
+};
+
+function ppOpt(active, accent) {
+  return {
+    flex: 1, padding: "11px 12px", borderRadius: 10,
+    background: active ? accent : "rgba(255,255,255,0.05)",
+    color: active ? "#000" : "rgba(255,255,255,0.7)",
+    border: active ? "none" : "1px solid rgba(255,255,255,0.12)",
+    fontWeight: 700, fontSize: 13, cursor: "pointer", transition: "all 0.15s",
+  };
+}
+
+const ppInput = {
+  width: "100%", background: "rgba(255,255,255,0.05)",
+  border: "1px solid rgba(255,255,255,0.12)", borderRadius: 10,
+  padding: "11px 12px", color: "#fff", fontSize: 14, outline: "none",
 };

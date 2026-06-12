@@ -1,6 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { WC_TEAMS } from "./teams.js";
 import { TEAM_CARDS } from "./products.js";
+import { whatsappUrl } from "./config.js";
 import ProductImage from "./components/ProductImage.jsx";
 import QuickViewModal from "./components/QuickViewModal.jsx";
 
@@ -11,7 +12,7 @@ const STATS = [
   { icon: "🌎", value: "2026", label: "FIFA World Cup" },
 ];
 
-function TeamCard({ t, onOpen, onWish, wished }) {
+function TeamCard({ t, onOpen }) {
   const [hovered, setHovered] = useState(false);
   const accent = "#22d3ee";
 
@@ -34,17 +35,6 @@ function TeamCard({ t, onOpen, onWish, wished }) {
         position: "relative", aspectRatio: "3 / 4",
         background: "radial-gradient(circle at 50% 42%, rgba(0,220,255,0.10), rgba(0,0,0,0) 66%), linear-gradient(180deg, #0b1018, #080b12)",
       }}>
-        <button
-          onClick={(e) => { e.stopPropagation(); onWish(t); }}
-          aria-label="Lista želja"
-          style={{
-            position: "absolute", top: 12, right: 12, zIndex: 4, width: 34, height: 34, borderRadius: 9,
-            background: "rgba(0,0,0,0.4)", border: "1px solid rgba(255,255,255,0.16)",
-            color: wished ? "#ff4d6d" : "#fff", fontSize: 15, cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(6px)",
-          }}
-        >{wished ? "♥" : "♡"}</button>
-
         <div style={{ position: "absolute", inset: 0, padding: 14, transition: "transform 0.4s", transform: hovered ? "scale(1.06)" : "scale(1)" }}>
           <ProductImage src={t.images[0]} alt={`${t.team} dres 2026`} colors={t.colors} version="fan" />
         </div>
@@ -122,10 +112,30 @@ function promoPill(color) {
 
 const fLabel = { fontSize: 12, color: "rgba(255,255,255,0.5)", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 12, fontWeight: 700 };
 
-export default function WorldCup({ onAddToCart, onWish, wishlist }) {
+function getVersionFilter() {
+  if (typeof window === "undefined") return null;
+  const m = window.location.hash.match(/[?&]v=([a-z]+)/);
+  return m && ["fan", "player", "mystery"].includes(m[1]) ? m[1] : null;
+}
+
+const VERSION_LABEL = {
+  fan: "Fan verzija · 4.200 RSD",
+  player: "Player verzija · 4.500 RSD",
+  mystery: "Mystery Dres · iznenađenje",
+};
+
+export default function WorldCup({ onAddToCart, cartCount = 0 }) {
   const [search, setSearch] = useState("");
   const [country, setCountry] = useState("all");
   const [openTeam, setOpenTeam] = useState(null);
+  const [versionFilter, setVersionFilter] = useState(getVersionFilter());
+
+  useEffect(() => {
+    const sync = () => setVersionFilter(getVersionFilter());
+    sync();
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
 
   const filtered = useMemo(() => {
     return TEAM_CARDS.filter((t) => {
@@ -198,6 +208,24 @@ export default function WorldCup({ onAddToCart, onWish, wishlist }) {
 
       {/* GRID - 6 po redu, pun širina */}
       <section style={{ maxWidth: 1400, margin: "0 auto", padding: "12px 1.5rem 80px" }}>
+        {versionFilter && (
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
+            background: versionFilter === "player" ? "rgba(74,222,128,0.1)" : versionFilter === "mystery" ? "rgba(168,85,247,0.12)" : "rgba(34,211,238,0.1)",
+            border: `1px solid ${versionFilter === "player" ? "rgba(74,222,128,0.3)" : versionFilter === "mystery" ? "rgba(168,85,247,0.35)" : "rgba(34,211,238,0.3)"}`,
+            borderRadius: 12, padding: "12px 16px", marginBottom: 18, flexWrap: "wrap",
+          }}>
+            <div style={{ fontSize: 14, color: "#fff", fontWeight: 600 }}>
+              {versionFilter === "mystery" ? "🎁" : versionFilter === "player" ? "⭐" : "👕"} Prikazana verzija: <strong>{VERSION_LABEL[versionFilter]}</strong>
+              <span style={{ color: "rgba(255,255,255,0.5)", fontWeight: 400 }}> — izaberi reprezentaciju, verzija je već selektovana</span>
+            </div>
+            <a href="#/world-cup" style={{
+              fontSize: 13, fontWeight: 700, color: "#fff", textDecoration: "none",
+              background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: 8, padding: "6px 12px", whiteSpace: "nowrap",
+            }}>✕ Poništi filter</a>
+          </div>
+        )}
         <div style={{ fontSize: 13, color: "rgba(255,255,255,0.45)", marginBottom: 20 }}>
           Prikazano <strong style={{ color: "#00dcff" }}>{filtered.length}</strong> reprezentacija
         </div>
@@ -211,30 +239,31 @@ export default function WorldCup({ onAddToCart, onWish, wishlist }) {
         ) : (
           <div className="wc-product-grid">
             {filtered.map((t) => (
-              <TeamCard key={t.teamId} t={t} onOpen={setOpenTeam} onWish={onWish} wished={wishlist.includes(`${t.teamId}-home-fan`)} />
+              <TeamCard key={t.teamId} t={t} onOpen={setOpenTeam} />
             ))}
           </div>
         )}
       </section>
 
-      {/* Floating WhatsApp */}
-      <a href="https://wa.me/381600000000" target="_blank" rel="noopener noreferrer" className="wc-whatsapp-fab"
-        style={{
-          position: "fixed", bottom: 24, right: 24, zIndex: 95,
-          display: "inline-flex", alignItems: "center", gap: 10,
-          background: "linear-gradient(135deg, #25D366, #1ebe5d)", color: "#04210f",
-          padding: "14px 22px", borderRadius: 999, fontWeight: 800, fontSize: 14,
-          textDecoration: "none", boxShadow: "0 8px 30px rgba(37,211,102,0.45)",
-        }}
-      >{"💬"} Naruči putem WhatsApp-a</a>
+      {/* Floating WhatsApp — only when there are items in the cart */}
+      {cartCount > 0 && (
+        <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="wc-whatsapp-fab"
+          style={{
+            position: "fixed", bottom: 24, right: 24, zIndex: 95,
+            display: "inline-flex", alignItems: "center", gap: 10,
+            background: "linear-gradient(135deg, #25D366, #1ebe5d)", color: "#04210f",
+            padding: "14px 22px", borderRadius: 999, fontWeight: 800, fontSize: 14,
+            textDecoration: "none", boxShadow: "0 8px 30px rgba(37,211,102,0.45)",
+          }}
+        >{"💬"} Naruči putem WhatsApp-a</a>
+      )}
 
       {openTeam && (
         <QuickViewModal
           team={openTeam}
+          initialVersion={versionFilter === "player" ? "player" : "fan"}
           onClose={() => setOpenTeam(null)}
           onAddToCart={(item) => { onAddToCart(item); setOpenTeam(null); }}
-          onWish={onWish}
-          wishlist={wishlist}
         />
       )}
     </div>
