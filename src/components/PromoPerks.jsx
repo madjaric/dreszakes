@@ -1,9 +1,8 @@
 // Static perks strip shown inside the Quick View modal and on product pages.
 export default function PromoPerks({ compact = false }) {
   const perks = [
-    { icon: "🚚", text: "Besplatna dostava" },
-    { icon: "🎁", text: "Kupi 4 dresa → Mystery Dres GRATIS" },
-    { icon: "💰", text: "Plaćanje pouzećem" },
+    { icon: "🚚", text: "Besplatna dostava na sve porudžbine" },
+    { icon: "🎁", text: "Kupi 4 dresa i dobijaš Mystery Dres GRATIS" },
   ];
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
