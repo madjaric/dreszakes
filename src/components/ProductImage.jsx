@@ -83,7 +83,7 @@ export default function ProductImage({ src, alt, colors, version, label = false,
           style={{
             width: "100%",
             height: "100%",
-            objectFit: "cover",
+            objectFit: "contain",
             display: "block",
           }}
         />
