@@ -105,18 +105,12 @@ function Navbar({ cartCount, onCart }) {
     >
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1.5rem", display: "flex", alignItems: "center", height: 68 }}>
         {/* Logo */}
-        <a href="#/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 8,
-            background: "linear-gradient(135deg, #00dcff, #39ff14)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 18, fontWeight: 900, color: "#000",
-            fontFamily: "'Bebas Neue', sans-serif",
-            boxShadow: "0 0 16px rgba(0,220,255,0.5)"
-          }}>D</div>
-          <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: 2, color: "#fff" }}>
-            DRES<span style={{ color: "#00dcff" }}>ZA</span>KES
-          </span>
+        <a href="#/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
+          <img
+            src="/images/logo.png"
+            alt="DRES ZA KEŠ"
+            style={{ height: 40, width: "auto", display: "block" }}
+          />
         </a>
 
         {/* Desktop Links */}
@@ -786,9 +780,11 @@ function Footer() {
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 32, marginBottom: 40 }}>
           <div>
-            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 26, color: "#fff", letterSpacing: 2, marginBottom: 12 }}>
-              DRES<span style={{ color: "#00dcff" }}>ZA</span>KES
-            </div>
+            <img
+              src="/images/logo.png"
+              alt="DRES ZA KEŠ"
+              style={{ height: 44, width: "auto", display: "block", marginBottom: 14 }}
+            />
             <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, lineHeight: 1.6, maxWidth: 200 }}>
               Najjači fudbalski dresovi u Srbiji. Premium kvalitet, dostava 10-14 radnih dana.
             </p>
