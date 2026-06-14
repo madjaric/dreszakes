@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 // Premium jersey SVG fallback, colored per team. Shown when the real photo
-// at /jerseys/<country>/... is not present yet. When you add the file, the
-// <img> loads and the fallback disappears automatically.
+// is not present yet. When you add the file, the <img> loads and the fallback
+// disappears automatically.
 function JerseyFallback({ colors, version, label }) {
   const { primary = "#1a1a2e", secondary = "#00dcff" } = colors || {};
   const gid = `g-${primary}-${secondary}`.replace(/[^a-zA-Z0-9-]/g, "");
@@ -70,10 +70,29 @@ function JerseyFallback({ colors, version, label }) {
 
 export default function ProductImage({ src, alt, colors, version, label = false, style }) {
   const [errored, setErrored] = useState(false);
+  const showImg = !errored && src;
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "100%", ...style }}>
-      {!errored && src && (
+    <div
+      style={{
+        position: "relative",
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        // Subtilni radijalni spotlight iza dresa (prikriva eventualne defekte
+        // izrezivanja i daje premium "studio" osećaj)
+        background: showImg
+          ? "radial-gradient(circle, rgba(0,255,255,0.12) 0%, rgba(0,255,255,0.05) 35%, transparent 70%)"
+          : "transparent",
+        // Dodatni prostor oko dresa da "diše"
+        padding: 24,
+        boxSizing: "border-box",
+        ...style,
+      }}
+    >
+      {showImg && (
         <img
           src={src}
           alt={alt}
@@ -85,10 +104,13 @@ export default function ProductImage({ src, alt, colors, version, label = false,
             height: "100%",
             objectFit: "contain",
             display: "block",
+            // Meki sjaj iza dresa — ako ostanu rupe od izrezivanja, plavičasti
+            // glow ih čini manje uočljivim
+            filter: "drop-shadow(0 0 20px rgba(0,255,255,0.25))",
           }}
         />
       )}
-      {(errored || !src) && <JerseyFallback colors={colors} version={version} label={label} />}
+      {!showImg && <JerseyFallback colors={colors} version={version} label={label} />}
     </div>
   );
 }
