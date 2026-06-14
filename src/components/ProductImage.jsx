@@ -81,17 +81,26 @@ export default function ProductImage({ src, alt, colors, version, label = false,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        // Subtilni radijalni spotlight iza dresa (prikriva eventualne defekte
-        // izrezivanja i daje premium "studio" osećaj)
-        background: showImg
-          ? "radial-gradient(circle, rgba(0,255,255,0.12) 0%, rgba(0,255,255,0.05) 35%, transparent 70%)"
-          : "transparent",
-        // Dodatni prostor oko dresa da "diše"
         padding: 24,
         boxSizing: "border-box",
         ...style,
       }}
     >
+      {/* Spotlight iza dresa — radijalni cyan sjaj. Apsolutno pozicioniran iza
+          slike; sama slika je transparentna pa se spotlight vidi kroz nju. */}
+      {showImg && (
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "radial-gradient(circle, rgba(0,255,255,0.18) 0%, rgba(0,255,255,0.08) 35%, transparent 70%)",
+            pointerEvents: "none",
+          }}
+        />
+      )}
+
       {showImg && (
         <img
           src={src}
@@ -100,16 +109,19 @@ export default function ProductImage({ src, alt, colors, version, label = false,
           decoding="async"
           onError={() => setErrored(true)}
           style={{
+            position: "relative",
+            zIndex: 1,
             width: "100%",
             height: "100%",
             objectFit: "contain",
             display: "block",
-            // Meki sjaj iza dresa — ako ostanu rupe od izrezivanja, plavičasti
-            // glow ih čini manje uočljivim
-            filter: "drop-shadow(0 0 20px rgba(0,255,255,0.25))",
+            // Meki cyan glow oko siluete dresa (dva sloja za dubinu)
+            filter:
+              "drop-shadow(0 0 20px rgba(0,255,255,0.25)) drop-shadow(0 0 40px rgba(0,255,255,0.15))",
           }}
         />
       )}
+
       {!showImg && <JerseyFallback colors={colors} version={version} label={label} />}
     </div>
   );

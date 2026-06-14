@@ -1,5 +1,5 @@
 // AUTO-GENERATED iz stvarnih slika u /public/images/kits/.
-// Transparentni WebP (poboljšano uklanjanje pozadine - čuva tamno platno).
+// Transparentni WebP (GrabCut izrezivanje - prava alpha transparentnost).
 // Irak i Iran nemaju slike i koriste SVG placeholder.
 export const KIT_IMAGES = {
   "alzir": { home: "/images/kits/alzir-home.webp" },
