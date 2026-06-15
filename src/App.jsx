@@ -3,6 +3,7 @@ import WorldCup from "./WorldCup.jsx";
 import ProductPage from "./components/ProductPage.jsx";
 import CoverageDashboard from "./components/CoverageDashboard.jsx";
 import CheckoutPage from "./components/CheckoutPage.jsx";
+import AnnouncementBar from "./components/AnnouncementBar.jsx";
 import { whatsappUrl } from "./config.js";
 
 const NAV_LINKS = [
@@ -105,12 +106,18 @@ function Navbar({ cartCount, onCart }) {
     >
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1.5rem", display: "flex", alignItems: "center", height: 68 }}>
         {/* Logo */}
-        <a href="#/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
-          <img
-            src="/images/logo.png"
-            alt="DRES ZA KEŠ"
-            style={{ height: 40, width: "auto", display: "block" }}
-          />
+        <a href="#/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{
+            width: 36, height: 36, borderRadius: 8,
+            background: "linear-gradient(135deg, #00dcff, #39ff14)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 18, fontWeight: 900, color: "#000",
+            fontFamily: "'Bebas Neue', sans-serif",
+            boxShadow: "0 0 16px rgba(0,220,255,0.5)"
+          }}>D</div>
+          <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: 2, color: "#fff" }}>
+            DRES<span style={{ color: "#00dcff" }}>ZA</span>KES
+          </span>
         </a>
 
         {/* Desktop Links */}
@@ -176,11 +183,13 @@ const badge = {
   display: "flex", alignItems: "center", justifyContent: "center"
 };
 
-function HeroSection() {
+function HeroSection({ withBar = false }) {
   return (
     <section id="hero" style={{
-      minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center",
-      position: "relative", overflow: "hidden", padding: "120px 1.5rem 80px"
+      minHeight: withBar ? "calc(100vh - 112px)" : "100vh",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      position: "relative", overflow: "hidden",
+      padding: withBar ? "56px 1.5rem 80px" : "120px 1.5rem 80px"
     }}>
       {/* Background effects */}
       <div style={{
@@ -780,11 +789,9 @@ function Footer() {
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 32, marginBottom: 40 }}>
           <div>
-            <img
-              src="/images/logo.png"
-              alt="DRES ZA KEŠ"
-              style={{ height: 44, width: "auto", display: "block", marginBottom: 14 }}
-            />
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 26, color: "#fff", letterSpacing: 2, marginBottom: 12 }}>
+              DRES<span style={{ color: "#00dcff" }}>ZA</span>KES
+            </div>
             <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, lineHeight: 1.6, maxWidth: 200 }}>
               Najjači fudbalski dresovi u Srbiji. Premium kvalitet, dostava 10-14 radnih dana.
             </p>
@@ -1000,7 +1007,10 @@ export default function DresZaKes() {
 
       {route.name === "home" && (
         <>
-          <HeroSection />
+          <div style={{ paddingTop: 68 }}>
+            <AnnouncementBar />
+          </div>
+          <HeroSection withBar />
           <WhyUsSection />
           <ProductsSection onAddToCart={addToCart} />
           <ComparisonSection />
