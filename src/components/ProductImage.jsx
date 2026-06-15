@@ -68,7 +68,7 @@ function JerseyFallback({ colors, version, label }) {
   );
 }
 
-export default function ProductImage({ src, alt, colors, version, label = false, style }) {
+export default function ProductImage({ src, alt, colors, version, label = false, fit = "contain", style }) {
   const [errored, setErrored] = useState(false);
   const showImg = !errored && src;
 
@@ -81,6 +81,7 @@ export default function ProductImage({ src, alt, colors, version, label = false,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        overflow: "hidden",
         ...style,
       }}
     >
@@ -94,7 +95,7 @@ export default function ProductImage({ src, alt, colors, version, label = false,
           style={{
             width: "100%",
             height: "100%",
-            objectFit: "contain",
+            objectFit: fit,
             display: "block",
           }}
         />

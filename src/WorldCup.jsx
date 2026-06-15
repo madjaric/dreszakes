@@ -30,13 +30,14 @@ function TeamCard({ t, onOpen }) {
         display: "flex", flexDirection: "column", cursor: "pointer",
       }}
     >
-      {/* Slika dresa - ~70% kartice */}
+      {/* Slika dresa - popunjava karticu */}
       <div style={{
         position: "relative", aspectRatio: "3 / 4",
         background: "radial-gradient(circle at 50% 42%, rgba(0,220,255,0.10), rgba(0,0,0,0) 66%), linear-gradient(180deg, #0b1018, #080b12)",
+        overflow: "hidden",
       }}>
-        <div style={{ position: "absolute", inset: 0, padding: 14, transition: "transform 0.4s", transform: hovered ? "scale(1.06)" : "scale(1)" }}>
-          <ProductImage src={t.images[0]} alt={`${t.team} dres 2026`} colors={t.colors} version="fan" />
+        <div style={{ position: "absolute", inset: 0, transition: "transform 0.4s", transform: hovered ? "scale(1.06)" : "scale(1)" }}>
+          <ProductImage src={t.images[0]} alt={`${t.team} dres 2026`} colors={t.colors} version="fan" fit="cover" />
         </div>
       </div>
 
