@@ -983,6 +983,7 @@ export default function DresZaKes() {
 
       {route.name === "worldcup" && (
         <div style={{ paddingTop: 68 }}>
+          <AnnouncementBar />
           <WorldCup onAddToCart={addToCart} cartCount={cartItems.length} />
         </div>
       )}
