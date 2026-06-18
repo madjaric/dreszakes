@@ -4,28 +4,35 @@ import ProductImage from "./ProductImage.jsx";
 import SizeSelector from "./SizeSelector.jsx";
 import QuantitySelector from "./QuantitySelector.jsx";
 import PromoPerks from "./PromoPerks.jsx";
+import LivePhotosBadge from "./LivePhotosBadge.jsx";
 import WhatsAppButton from "./WhatsAppButton.jsx";
 
-// Update document head for SEO (title + meta description).
+import { applySeo, breadcrumbLd, productLd, SITE } from "../seo.js";
+import { handleNavClick, href } from "../navigate.js";
+
+// Update document head for SEO (title, meta, canonical, OG, JSON-LD).
 function useSeo(product) {
   useEffect(() => {
     if (!product) return;
-    const prevTitle = document.title;
-    document.title = product.seoTitle;
-
-    let meta = document.querySelector('meta[name="description"]');
-    const prevDesc = meta ? meta.getAttribute("content") : null;
-    if (!meta) {
-      meta = document.createElement("meta");
-      meta.setAttribute("name", "description");
-      document.head.appendChild(meta);
-    }
-    meta.setAttribute("content", product.seoDescription);
-
-    return () => {
-      document.title = prevTitle;
-      if (meta && prevDesc !== null) meta.setAttribute("content", prevDesc);
+    const path = `/world-cup/${product.slug}`;
+    const ld = {
+      "@context": "https://schema.org",
+      "@graph": [
+        productLd(product, path),
+        breadcrumbLd([
+          { name: "Početna", path: "/" },
+          { name: "SP 2026", path: "/world-cup" },
+          { name: product.team, path },
+        ]),
+      ],
     };
+    applySeo({
+      title: product.seoTitle,
+      description: product.seoDescription,
+      path,
+      image: product.images && product.images[0] ? `${SITE}${product.images[0]}` : undefined,
+      jsonLd: ld,
+    });
   }, [product]);
 }
 
@@ -45,7 +52,7 @@ export default function ProductPage({ slug, onAddToCart }) {
       <div style={{ maxWidth: 700, margin: "0 auto", padding: "80px 1.5rem", textAlign: "center" }}>
         <div style={{ fontSize: 56, marginBottom: 16 }}>🔍</div>
         <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 32, color: "#fff", marginBottom: 12 }}>Proizvod nije pronađen</h2>
-        <a href="#/world-cup" style={{ color: "#00dcff", textDecoration: "none", fontWeight: 700 }}>← Nazad na SP 2026 kolekciju</a>
+        <a href={href("/world-cup")} onClick={(e) => handleNavClick(e, "/world-cup")} style={{ color: "#00dcff", textDecoration: "none", fontWeight: 700 }}>← Nazad na SP 2026 kolekciju</a>
       </div>
     );
   }
@@ -58,9 +65,9 @@ export default function ProductPage({ slug, onAddToCart }) {
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 1.5rem 60px" }}>
       {/* Breadcrumb */}
       <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 24 }}>
-        <a href="#/" style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none" }}>Početna</a>
+        <a href={href("/")} onClick={(e) => handleNavClick(e, "/")} style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none" }}>Početna</a>
         {" / "}
-        <a href="#/world-cup" style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none" }}>SP 2026</a>
+        <a href={href("/world-cup")} onClick={(e) => handleNavClick(e, "/world-cup")} style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none" }}>SP 2026</a>
         {" / "}
         <span style={{ color: accent }}>{product.team} {product.typeLabel}</span>
       </div>
@@ -144,6 +151,10 @@ export default function ProductPage({ slug, onAddToCart }) {
             <WhatsAppButton product={product} size={size} qty={qty} personalization={personalization} full />
           </div>
 
+          <div style={{ marginBottom: 24 }}>
+            <LivePhotosBadge />
+          </div>
+
           <PromoPerks />
         </div>
       </div>
@@ -160,7 +171,7 @@ export default function ProductPage({ slug, onAddToCart }) {
               return (
                 <a
                   key={r.slug}
-                  href={`#/world-cup/${r.slug}`}
+                  href={href(`/world-cup/${r.slug}`)} onClick={(e) => handleNavClick(e, `/world-cup/${r.slug}`)}
                   style={{
                     textDecoration: "none",
                     background: "rgba(255,255,255,0.03)",

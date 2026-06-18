@@ -8,6 +8,7 @@
 
 const DEFAULT_ITEMS = [
   "🚚 Besplatna dostava na sve porudžbine",
+  "📸 Šaljemo uživo slike dresa na WhatsApp/Instagram",
   "🎁 Kupi 4 dresa → Mystery Dres GRATIS",
   "⚽ Svi timovi Svetskog prvenstva 2026",
 ];

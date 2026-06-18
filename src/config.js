@@ -14,3 +14,7 @@ export function whatsappUrl(text) {
 
 // Delivery promise shown across the site.
 export const DELIVERY_TEXT = "Dostava 10-14 radnih dana";
+
+// Instagram profil prodavnice.
+export const INSTAGRAM_URL = "https://www.instagram.com/dreszakes/";
+export const INSTAGRAM_HANDLE = "@dreszakes";

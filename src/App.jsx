@@ -4,8 +4,10 @@ import ProductPage from "./components/ProductPage.jsx";
 import CoverageDashboard from "./components/CoverageDashboard.jsx";
 import CheckoutPage from "./components/CheckoutPage.jsx";
 import AnnouncementBar from "./components/AnnouncementBar.jsx";
+import LivePhotosBadge from "./components/LivePhotosBadge.jsx";
 import { whatsappUrl } from "./config.js";
 import { applySeo, breadcrumbLd, collectionLd } from "./seo.js";
+import { navigate, handleNavClick, href } from "./navigate.js";
 
 const NAV_LINKS = [
   { label: "Početna", href: "#/" },
@@ -107,7 +109,7 @@ function Navbar({ cartCount, onCart }) {
     >
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1.5rem", display: "flex", alignItems: "center", height: 68 }}>
         {/* Logo */}
-        <a href="#/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }} aria-label="Dres za Keš — početna">
+        <a href={href("/")} onClick={(e) => handleNavClick(e, "/")} style={{ textDecoration: "none", display: "flex", alignItems: "center" }} aria-label="Dres za Keš — početna">
           <img
             src="/images/logo.png"
             alt="Dres za Keš — fudbalski dresovi reprezentacija"
@@ -122,7 +124,7 @@ function Navbar({ cartCount, onCart }) {
         {/* Desktop Links */}
         <div style={{ display: "flex", gap: 32, marginLeft: 48, flex: 1 }} className="hidden-mobile">
           {NAV_LINKS.map(l => (
-            <a key={l.label} href={l.href} style={{
+            <a key={l.label} href={href(l.href)} onClick={(e) => handleNavClick(e, l.href)} style={{
               color: "rgba(255,255,255,0.7)", textDecoration: "none",
               fontSize: 13, fontWeight: 600, letterSpacing: 1.2, textTransform: "uppercase",
               transition: "color 0.2s"
@@ -277,7 +279,7 @@ function HeroSection({ withBar = false }) {
             onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 0 50px rgba(0,220,255,0.6)"; }}
             onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 0 30px rgba(0,220,255,0.4)"; }}
           >⚡ Kupi odmah</a>
-          <a href="#/world-cup" style={{
+          <a href={href("/world-cup")} onClick={(e) => handleNavClick(e, "/world-cup")} style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             background: "rgba(255,255,255,0.05)",
             border: "1px solid rgba(255,255,255,0.15)",
@@ -311,7 +313,7 @@ function HeroSection({ withBar = false }) {
           display: "flex", gap: 32, justifyContent: "center", marginTop: 56,
           flexWrap: "wrap"
         }}>
-          {[["500+", "Zadovoljnih kupaca"], ["2", "Verzije dresova"], ["10-14", "Dana dostava"]].map(([val, label]) => (
+          {[["500+", "Zadovoljnih kupaca"], ["48", "Reprezentacija"], ["10-14", "Dana dostava"]].map(([val, label]) => (
             <div key={label} style={{ textAlign: "center" }}>
               <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 36, color: "#00dcff", lineHeight: 1 }}>{val}</div>
               <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", letterSpacing: 1, textTransform: "uppercase", marginTop: 4 }}>{label}</div>
@@ -378,7 +380,7 @@ function ProductsSection({ onAddToCart }) {
     if (p.addToCart) {
       onAddToCart(p);
     } else {
-      window.location.assign(p.href);
+      navigate(p.href);
     }
   };
   return (
@@ -535,6 +537,26 @@ function ComparisonSection() {
         </h2>
       </div>
 
+      {/* Realna razlika u kvalitetu grba — leva strana Fan, desna Player */}
+      <div style={{
+        position: "relative", borderRadius: 18, overflow: "hidden",
+        border: "1px solid rgba(255,255,255,0.1)", marginBottom: 40,
+        boxShadow: "0 10px 40px rgba(0,0,0,0.4)"
+      }}>
+        <img
+          src="/images/fan-vs-player.webp"
+          alt="Razlika između Fan i Player verzije dresa — kvalitet grba (levo Fan, desno Player)"
+          width="1200" height="562" loading="lazy" decoding="async"
+          style={{ width: "100%", height: "auto", display: "block" }}
+        />
+        {/* Oznake preko slike */}
+        <div style={{ position: "absolute", top: 12, left: 12, background: "rgba(34,211,238,0.92)", color: "#022", fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, letterSpacing: 1, padding: "5px 14px", borderRadius: 8 }}>← FAN</div>
+        <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(74,222,128,0.92)", color: "#022", fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, letterSpacing: 1, padding: "5px 14px", borderRadius: 8 }}>PLAYER →</div>
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "20px 14px 10px", background: "linear-gradient(0deg, rgba(5,5,14,0.85), transparent)", textAlign: "center", color: "rgba(255,255,255,0.85)", fontSize: 13 }}>
+          Detalj grba — Player verzija ima oštrije, slojevite detalje i premium izradu
+        </div>
+      </div>
+
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
         {/* Fan Version */}
         <div style={{
@@ -586,6 +608,10 @@ function ComparisonSection() {
             </div>
           ))}
         </div>
+      </div>
+
+      <div style={{ marginTop: 32, maxWidth: 600, marginLeft: "auto", marginRight: "auto" }}>
+        <LivePhotosBadge />
       </div>
     </section>
   );
@@ -802,9 +828,9 @@ function Footer() {
           </div>
           <div>
             <div style={{ fontWeight: 700, color: "#fff", marginBottom: 14, fontSize: 12, letterSpacing: 1.5, textTransform: "uppercase" }}>Linkovi</div>
-            {[["Početna", "#/"], ["Proizvodi", "#products"], ["SP 2026", "#/world-cup"], ["FAQ", "#faq"]].map(([l, href]) => (
+            {[["Početna", "/"], ["Proizvodi", "#products"], ["SP 2026", "/world-cup"], ["FAQ", "#faq"]].map(([l, to]) => (
               <div key={l} style={{ marginBottom: 10 }}>
-                <a href={href} style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, textDecoration: "none" }}
+                <a href={href(to)} onClick={(e) => handleNavClick(e, to)} style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, textDecoration: "none" }}
                   onMouseEnter={e => e.target.style.color = "#00dcff"}
                   onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}
                 >{l}</a>
@@ -959,19 +985,20 @@ function CartModal({ items, onClose, onCheckout, onRemoveItem }) {
 
 function parseRoute() {
   if (typeof window === "undefined") return { name: "home" };
-  // Podrži i hash (#/world-cup) i clean path (/world-cup) — clean path dolazi
-  // iz sitemap-a / Google indeksa. Hash ima prednost ako postoji.
-  let hash = window.location.hash.replace(/^#/, "");
-  if (!hash || hash === "/") {
-    const path = window.location.pathname;
-    if (path && path !== "/") hash = path;
+  // Clean URL (/world-cup) je primaran. Hash (#/world-cup) se podržava radi
+  // kompatibilnosti sa starim linkovima — konvertuje se u clean putanju.
+  let path = window.location.pathname;
+  if (!path || path === "/") {
+    const hash = window.location.hash.replace(/^#/, "");
+    if (hash && hash !== "/") path = hash;
   }
-  if (hash === "/coverage") return { name: "coverage" };
-  if (hash === "/checkout") return { name: "checkout" };
-  // #/world-cup/:slug
-  const productMatch = hash.match(/^\/world-cup\/(.+)$/);
+  path = path.replace(/\/+$/, "") || "/"; // ukloni trailing slash
+  if (path === "/coverage") return { name: "coverage" };
+  if (path === "/checkout") return { name: "checkout" };
+  // /world-cup/:slug
+  const productMatch = path.match(/^\/world-cup\/(.+)$/);
   if (productMatch) return { name: "product", slug: productMatch[1] };
-  if (hash.startsWith("/world-cup")) return { name: "worldcup" };
+  if (path.startsWith("/world-cup")) return { name: "worldcup" };
   return { name: "home" };
 }
 
@@ -982,25 +1009,27 @@ export default function DresZaKes() {
   const [route, setRoute] = useState(parseRoute());
 
   useEffect(() => {
-    // Clean URL → hash normalizacija (tačka 4): ako je korisnik/crawler došao
-    // preko clean putanje (/world-cup, /world-cup/argentina-home-fan, /checkout...)
-    // bez hash-a, prebaci na ekvivalentni #/ oblik. Koristi replaceState da NEMA
-    // reload-a, NEMA gubitka React state-a, i da se URL ne duplira u istoriji.
-    const path = window.location.pathname;
-    const hasHash = window.location.hash && window.location.hash.length > 1;
-    if (!hasHash && path && path !== "/") {
-      const clean = path.replace(/\/+$/, ""); // ukloni trailing slash
-      // postavi hash na clean putanju i resetuj pathname na "/" da ostane samo hash ruta
-      window.history.replaceState(null, "", "/#" + clean);
-      setRoute(parseRoute());
+    // Ako je korisnik došao preko starog hash linka (#/world-cup), konvertuj
+    // URL u clean oblik (/world-cup) bez reload-a — tako u browseru ostaje čist URL.
+    // parseRoute već čita hash pri inicijalizaciji, pa je ruta ista — samo čistimo URL.
+    const rawHash = window.location.hash.replace(/^#/, "");
+    if (rawHash && rawHash.startsWith("/")) {
+      const clean = (rawHash.replace(/\/+$/, "") || "/");
+      window.history.replaceState(null, "", clean);
     }
 
-    const onHash = () => {
+    // History API: hvataj back/forward i programski navigate().
+    const onPop = () => {
       setRoute(parseRoute());
       window.scrollTo(0, 0);
     };
-    window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
+    window.addEventListener("popstate", onPop);
+    // Zadrži hashchange za in-page sidra (#products, #faq) ako se koriste
+    window.addEventListener("hashchange", onPop);
+    return () => {
+      window.removeEventListener("popstate", onPop);
+      window.removeEventListener("hashchange", onPop);
+    };
   }, []);
 
   // Per-route SEO (title, meta, canonical, JSON-LD). ProductPage upravlja svojim.
@@ -1070,7 +1099,8 @@ export default function DresZaKes() {
 
   const goToCheckout = () => {
     setCartOpen(false);
-    window.location.hash = "/checkout";
+    window.scrollTo(0, 0);
+    navigate("/checkout");
   };
 
   return (
