@@ -842,7 +842,7 @@ function Footer() {
 }
 
 // Cart modal
-function CartModal({ items, onClose, onCheckout }) {
+function CartModal({ items, onClose, onCheckout, onRemoveItem }) {
   const priceNum = (p) => typeof p === "number" ? p : parseInt(String(p).replace(/\./g, ""), 10) || 0;
   const total = items.reduce((s, i) => s + priceNum(i.price) * (i.qty || 1), 0);
   const totalQty = items.reduce((s, i) => s + (i.qty || 1), 0);
@@ -906,7 +906,22 @@ function CartModal({ items, onClose, onCheckout }) {
                       </div>
                     )}
                   </div>
-                  <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 20, color: "#00dcff" }}>{(priceNum(item.price) * (item.qty || 1)).toLocaleString("sr-RS")} RSD</div>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6, flexShrink: 0 }}>
+                    <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 20, color: "#00dcff" }}>{(priceNum(item.price) * (item.qty || 1)).toLocaleString("sr-RS")} RSD</div>
+                    {onRemoveItem && (
+                      <button
+                        onClick={() => onRemoveItem(i)}
+                        aria-label="Ukloni iz korpe"
+                        title="Ukloni"
+                        style={{
+                          background: "rgba(255,77,109,0.1)", border: "1px solid rgba(255,77,109,0.25)",
+                          color: "#ff4d6d", fontSize: 11, fontWeight: 700, cursor: "pointer",
+                          borderRadius: 7, padding: "4px 10px", lineHeight: 1,
+                          display: "flex", alignItems: "center", gap: 4,
+                        }}
+                      >✕ Ukloni</button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -968,6 +983,10 @@ export default function DresZaKes() {
     setTimeout(() => setToast(null), 2800);
   };
 
+  const removeFromCart = (index) => {
+    setCartItems(prev => prev.filter((_, i) => i !== index));
+  };
+
   const goToCheckout = () => {
     setCartOpen(false);
     window.location.hash = "/checkout";
@@ -992,7 +1011,7 @@ export default function DresZaKes() {
 
       {route.name === "checkout" && (
         <div style={{ paddingTop: 80 }}>
-          <CheckoutPage items={cartItems} onClearCart={() => setCartItems([])} />
+          <CheckoutPage items={cartItems} onClearCart={() => setCartItems([])} onRemoveItem={removeFromCart} />
         </div>
       )}
 
@@ -1031,7 +1050,7 @@ export default function DresZaKes() {
         </div>
       )}
 
-      {cartOpen && <CartModal items={cartItems} onClose={() => setCartOpen(false)} onCheckout={goToCheckout} />}
+      {cartOpen && <CartModal items={cartItems} onClose={() => setCartOpen(false)} onCheckout={goToCheckout} onRemoveItem={removeFromCart} />}
     </div>
   );
 }

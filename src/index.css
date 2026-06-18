@@ -103,6 +103,15 @@ img {
   .pp-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
 }
 
+/* Responsive: stack checkout layout + form fields on mobile */
+@media (max-width: 860px) {
+  .checkout-grid { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 520px) {
+  .checkout-fields { grid-template-columns: 1fr !important; }
+  .checkout-fields .checkout-span { grid-column: auto !important; }
+}
+
 /* ===== World Cup page ===== */
 .wc-chips::-webkit-scrollbar { height: 6px; }
 .wc-chips::-webkit-scrollbar-thumb { background: rgba(0,220,255,0.3); border-radius: 99px; }

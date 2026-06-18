@@ -17,7 +17,7 @@ const FIELDS = [
 // Fields that block submission until filled (per spec): ime, telefon, adresa, grad.
 const REQUIRED_KEYS = ["fullName", "phone", "address", "city"];
 
-export default function CheckoutPage({ items, onClearCart }) {
+export default function CheckoutPage({ items, onClearCart, onRemoveItem }) {
   const [form, setForm] = useState({ fullName: "", phone: "", email: "", address: "", city: "", zip: "" });
   const [errors, setErrors] = useState({});
 
@@ -77,9 +77,9 @@ export default function CheckoutPage({ items, onClearCart }) {
         {/* Form */}
         <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
           <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, color: "#fff", letterSpacing: 0.5, marginBottom: 18 }}>Podaci za dostavu</h3>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          <div className="checkout-fields" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
             {FIELDS.map((f) => (
-              <div key={f.key} style={{ gridColumn: f.key === "address" ? "1 / -1" : "auto" }}>
+              <div key={f.key} className={f.key === "address" ? "checkout-span" : undefined} style={{ gridColumn: f.key === "address" ? "1 / -1" : "auto" }}>
                 <label style={{ display: "block", fontSize: 12, color: "rgba(255,255,255,0.55)", marginBottom: 6, fontWeight: 600 }}>
                   {f.label}{f.required && <span style={{ color: "#ff4d6d" }}> *</span>}
                 </label>
@@ -141,8 +141,23 @@ export default function CheckoutPage({ items, onClearCart }) {
                     </div>
                   )}
                 </div>
-                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, color: "#00dcff" }}>
-                  {(priceNum(item.price) * (item.qty || 1)).toLocaleString("sr-RS")}
+                <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+                  <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, color: "#00dcff" }}>
+                    {(priceNum(item.price) * (item.qty || 1)).toLocaleString("sr-RS")}
+                  </div>
+                  {onRemoveItem && (
+                    <button
+                      onClick={() => onRemoveItem(i)}
+                      aria-label="Ukloni iz korpe"
+                      title="Ukloni"
+                      style={{
+                        width: 28, height: 28, borderRadius: 8, flexShrink: 0,
+                        background: "rgba(255,77,109,0.1)", border: "1px solid rgba(255,77,109,0.25)",
+                        color: "#ff4d6d", fontSize: 15, cursor: "pointer", lineHeight: 1,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}
+                    >×</button>
+                  )}
                 </div>
               </div>
             ))}
