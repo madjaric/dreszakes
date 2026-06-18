@@ -1,4 +1,9 @@
+# Dres za Keš — robots.txt
 User-agent: *
 Allow: /
 
-Sitemap: https://dreszakes.vercel.app/sitemap.xml
+# Ne indeksiraj checkout (nema SEO vrednost, sadrži korisničke podatke)
+Disallow: /checkout
+Disallow: /*?v=
+
+Sitemap: https://www.dreszakes.shop/sitemap.xml

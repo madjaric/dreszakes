@@ -5,6 +5,7 @@ import CoverageDashboard from "./components/CoverageDashboard.jsx";
 import CheckoutPage from "./components/CheckoutPage.jsx";
 import AnnouncementBar from "./components/AnnouncementBar.jsx";
 import { whatsappUrl } from "./config.js";
+import { applySeo, breadcrumbLd, collectionLd } from "./seo.js";
 
 const NAV_LINKS = [
   { label: "Početna", href: "#/" },
@@ -106,10 +107,14 @@ function Navbar({ cartCount, onCart }) {
     >
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1.5rem", display: "flex", alignItems: "center", height: 68 }}>
         {/* Logo */}
-        <a href="#/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
+        <a href="#/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }} aria-label="Dres za Keš — početna">
           <img
             src="/images/logo.png"
-            alt="DRES ZA KEŠ"
+            alt="Dres za Keš — fudbalski dresovi reprezentacija"
+            width="81"
+            height="40"
+            loading="eager"
+            fetchpriority="high"
             style={{ height: 40, width: "auto", display: "block" }}
           />
         </a>
@@ -785,7 +790,10 @@ function Footer() {
           <div>
             <img
               src="/images/logo.png"
-              alt="DRES ZA KEŠ"
+              alt="Dres za Keš logo"
+              width="89"
+              height="44"
+              loading="lazy"
               style={{ height: 44, width: "auto", display: "block", marginBottom: 14 }}
             />
             <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, lineHeight: 1.6, maxWidth: 200 }}>
@@ -951,7 +959,13 @@ function CartModal({ items, onClose, onCheckout, onRemoveItem }) {
 
 function parseRoute() {
   if (typeof window === "undefined") return { name: "home" };
-  const hash = window.location.hash.replace(/^#/, "");
+  // Podrži i hash (#/world-cup) i clean path (/world-cup) — clean path dolazi
+  // iz sitemap-a / Google indeksa. Hash ima prednost ako postoji.
+  let hash = window.location.hash.replace(/^#/, "");
+  if (!hash || hash === "/") {
+    const path = window.location.pathname;
+    if (path && path !== "/") hash = path;
+  }
   if (hash === "/coverage") return { name: "coverage" };
   if (hash === "/checkout") return { name: "checkout" };
   // #/world-cup/:slug
@@ -968,6 +982,19 @@ export default function DresZaKes() {
   const [route, setRoute] = useState(parseRoute());
 
   useEffect(() => {
+    // Clean URL → hash normalizacija (tačka 4): ako je korisnik/crawler došao
+    // preko clean putanje (/world-cup, /world-cup/argentina-home-fan, /checkout...)
+    // bez hash-a, prebaci na ekvivalentni #/ oblik. Koristi replaceState da NEMA
+    // reload-a, NEMA gubitka React state-a, i da se URL ne duplira u istoriji.
+    const path = window.location.pathname;
+    const hasHash = window.location.hash && window.location.hash.length > 1;
+    if (!hasHash && path && path !== "/") {
+      const clean = path.replace(/\/+$/, ""); // ukloni trailing slash
+      // postavi hash na clean putanju i resetuj pathname na "/" da ostane samo hash ruta
+      window.history.replaceState(null, "", "/#" + clean);
+      setRoute(parseRoute());
+    }
+
     const onHash = () => {
       setRoute(parseRoute());
       window.scrollTo(0, 0);
@@ -975,6 +1002,60 @@ export default function DresZaKes() {
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
+
+  // Per-route SEO (title, meta, canonical, JSON-LD). ProductPage upravlja svojim.
+  useEffect(() => {
+    if (route.name === "home") {
+      applySeo({
+        title: "Fudbalski Dresovi Reprezentacija | Dres za Keš — World Cup 2026",
+        description:
+          "Fudbalski dresovi reprezentacija za Svetsko prvenstvo 2026. Fan i Player verzija, domaći i gostujući dresovi, Mystery Dres iznenađenje. Dostava širom Srbije 10-14 radnih dana.",
+        path: "/",
+        jsonLd: {
+          "@context": "https://schema.org",
+          "@graph": [
+            breadcrumbLd([{ name: "Početna", path: "/" }]),
+            {
+              "@type": "FAQPage",
+              mainEntity: FAQS.map((f) => ({
+                "@type": "Question",
+                name: f.q,
+                acceptedAnswer: { "@type": "Answer", text: f.a },
+              })),
+            },
+          ],
+        },
+      });
+    } else if (route.name === "worldcup") {
+      applySeo({
+        title: "World Cup 2026 Dresovi — 48 Reprezentacija | Dres za Keš",
+        description:
+          "Dresovi svih 48 reprezentacija za Svetsko prvenstvo 2026. Argentina, Brazil, Nemačka, Portugal, Francuska, Engleska i ostali — Fan i Player verzija, domaći i gostujući. Dostava širom Srbije.",
+        path: "/world-cup",
+        jsonLd: collectionLd(
+          "World Cup 2026 Kolekcija",
+          "Fudbalski dresovi svih 48 reprezentacija za Svetsko prvenstvo 2026.",
+          "/world-cup"
+        ),
+      });
+    } else if (route.name === "checkout") {
+      applySeo({
+        title: "Naručivanje | Dres za Keš",
+        description: "Završite porudžbinu fudbalskih dresova. Dostava širom Srbije 10-14 radnih dana.",
+        path: "/checkout",
+      });
+      // checkout se ne indeksira
+      let r = document.head.querySelector('meta[name="robots"]');
+      if (r) r.setAttribute("content", "noindex, follow");
+    } else if (route.name === "coverage") {
+      applySeo({ title: "Image Coverage | Dres za Keš", description: "Interni pregled slika dresova.", path: "/coverage" });
+    }
+    // Vrati robots na index za ne-checkout rute
+    if (route.name !== "checkout") {
+      let r = document.head.querySelector('meta[name="robots"]');
+      if (r) r.setAttribute("content", "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1");
+    }
+  }, [route]);
 
   const addToCart = (product) => {
     const qty = product.qty || 1;
