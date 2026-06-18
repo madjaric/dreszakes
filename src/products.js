@@ -35,11 +35,11 @@ function imagePaths(teamId, type) {
 }
 
 function buildSeo(team, typeSr, versionLabel) {
-  const seoTitle = `${team.name} Dres 2026 ${typeSr} ${versionLabel} | Kupi Online — DresZaKes`;
+  const seoTitle = `${team.name} Dres 2026 — ${typeSr} ${versionLabel} | Dres za Keš`;
   const seoDescription =
-    `Kupi ${team.name} ${typeSr.toLowerCase()} dres za Svetsko prvenstvo 2026 (${versionLabel}). ` +
-    `Vrhunski kvalitet, brza dostava širom Srbije, plaćanje pouzećem. Besplatna dostava na sve porudžbine.`;
-  return { seoTitle, seoDescription: seoDescription.slice(0, 160) };
+    `${team.name} dres 2026 (${typeSr.toLowerCase()}, ${versionLabel.toLowerCase()}) za Svetsko prvenstvo. ` +
+    `Fudbalski dres reprezentacije ${team.name}, vrhunski kvalitet. Dostava širom Srbije 10-14 radnih dana.`;
+  return { seoTitle: seoTitle.slice(0, 60), seoDescription: seoDescription.slice(0, 160) };
 }
 
 export const PRODUCTS = (() => {

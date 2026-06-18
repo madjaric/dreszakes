@@ -8,7 +8,6 @@ import LivePhotosBadge from "./LivePhotosBadge.jsx";
 import WhatsAppButton from "./WhatsAppButton.jsx";
 
 import { applySeo, breadcrumbLd, productLd, SITE } from "../seo.js";
-import { handleNavClick, href } from "../navigate.js";
 
 // Update document head for SEO (title, meta, canonical, OG, JSON-LD).
 function useSeo(product) {
@@ -52,7 +51,7 @@ export default function ProductPage({ slug, onAddToCart }) {
       <div style={{ maxWidth: 700, margin: "0 auto", padding: "80px 1.5rem", textAlign: "center" }}>
         <div style={{ fontSize: 56, marginBottom: 16 }}>🔍</div>
         <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 32, color: "#fff", marginBottom: 12 }}>Proizvod nije pronađen</h2>
-        <a href={href("/world-cup")} onClick={(e) => handleNavClick(e, "/world-cup")} style={{ color: "#00dcff", textDecoration: "none", fontWeight: 700 }}>← Nazad na SP 2026 kolekciju</a>
+        <a href="#/world-cup" style={{ color: "#00dcff", textDecoration: "none", fontWeight: 700 }}>← Nazad na SP 2026 kolekciju</a>
       </div>
     );
   }
@@ -65,9 +64,9 @@ export default function ProductPage({ slug, onAddToCart }) {
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 1.5rem 60px" }}>
       {/* Breadcrumb */}
       <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 24 }}>
-        <a href={href("/")} onClick={(e) => handleNavClick(e, "/")} style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none" }}>Početna</a>
+        <a href="#/" style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none" }}>Početna</a>
         {" / "}
-        <a href={href("/world-cup")} onClick={(e) => handleNavClick(e, "/world-cup")} style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none" }}>SP 2026</a>
+        <a href="#/world-cup" style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none" }}>SP 2026</a>
         {" / "}
         <span style={{ color: accent }}>{product.team} {product.typeLabel}</span>
       </div>
@@ -171,7 +170,7 @@ export default function ProductPage({ slug, onAddToCart }) {
               return (
                 <a
                   key={r.slug}
-                  href={href(`/world-cup/${r.slug}`)} onClick={(e) => handleNavClick(e, `/world-cup/${r.slug}`)}
+                  href={`#/world-cup/${r.slug}`}
                   style={{
                     textDecoration: "none",
                     background: "rgba(255,255,255,0.03)",

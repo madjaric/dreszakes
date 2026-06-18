@@ -37,7 +37,7 @@ function TeamCard({ t, onOpen }) {
         overflow: "hidden",
       }}>
         <div style={{ position: "absolute", inset: 0, transition: "transform 0.4s", transform: hovered ? "scale(1.06)" : "scale(1)" }}>
-          <ProductImage src={t.images[0]} alt={`${t.team} dres 2026`} colors={t.colors} version="fan" fit="cover" />
+          <ProductImage src={t.images[0]} alt={`${t.team} dres 2026 — fudbalski dres reprezentacije`} colors={t.colors} version="fan" fit="cover" />
         </div>
       </div>
 
@@ -115,7 +115,9 @@ const fLabel = { fontSize: 12, color: "rgba(255,255,255,0.5)", letterSpacing: 1.
 
 function getVersionFilter() {
   if (typeof window === "undefined") return null;
-  const m = window.location.hash.match(/[?&]v=([a-z]+)/);
+  // Clean URL: ?v=fan u search-u; stari hash: #/world-cup?v=fan
+  const src = window.location.search || window.location.hash || "";
+  const m = src.match(/[?&]v=([a-z]+)/);
   return m && ["fan", "player"].includes(m[1]) ? m[1] : null;
 }
 
@@ -134,7 +136,11 @@ export default function WorldCup({ onAddToCart, cartCount = 0 }) {
     const sync = () => setVersionFilter(getVersionFilter());
     sync();
     window.addEventListener("hashchange", sync);
-    return () => window.removeEventListener("hashchange", sync);
+    window.addEventListener("popstate", sync);
+    return () => {
+      window.removeEventListener("hashchange", sync);
+      window.removeEventListener("popstate", sync);
+    };
   }, []);
 
   const filtered = useMemo(() => {
